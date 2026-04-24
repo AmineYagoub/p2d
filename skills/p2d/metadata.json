@@ -1,5 +1,5 @@
 {
-  "version": "1.0.1",
+  "version": "1.1.0",
   "organization": "P2D",
   "date": "April 2026",
   "abstract": "An AI agent skill that orchestrates ast-grep, code-review-graph (MCP), and Codemod to move code intelligence from probabilistic (text-based grep/read) to deterministic (AST-structured navigation and editing). Contains 6 rule categories: structural discovery with a deep pattern catalog, dependency tracing via MCP tools with architecture-level analysis, surgical AST execution, graceful fallback with heuristics, auto-install for missing tools, and multi-tool orchestration strategies with code smell detection. Includes context-sensitive decision trees that skip unnecessary phases based on symbol type and change scope. Designed to reduce token consumption by 70-95% in large codebase operations.",
