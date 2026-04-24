@@ -11,6 +11,13 @@ Run these checks once at the start of a P2D session, not on every invocation.
 If a tool is missing, offer to install it. If the user declines, note which
 phases will run in fallback mode.
 
+If the user asks for "P2D doctor", "doctor mode", or "what mode will P2D use",
+this is the rule to execute. Prefer the bundled helper when available:
+
+```bash
+skills/p2d/scripts/p2d-doctor --root .
+```
+
 ### How to Check
 
 Run each check via bash. Report a summary to the user before proceeding.
