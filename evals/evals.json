@@ -1,0 +1,167 @@
+{
+  "skill_name": "p2d",
+  "evals": [
+    {
+      "id": "find-symbol-typescript-nest",
+      "prompt": "In the pinned NestJS starter benchmark, find all files that define, import, test, or otherwise reference AppService. Do not read whole files unless they are tiny.",
+      "expected_output": "A categorized reference report for AppService with accuracy caveats and no raw grep dump.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Reports categorized references rather than raw command output."
+        },
+        {
+          "text": "Includes recall/precision or explicit accuracy limits when discussing token savings."
+        },
+        {
+          "text": "Does not read every matching file in full as the first strategy."
+        }
+      ]
+    },
+    {
+      "id": "find-react-component-references",
+      "prompt": "In the pinned React RealWorld benchmark, find where ArticleList is defined, imported, and rendered. Keep the answer compact.",
+      "expected_output": "A compact categorized list of ArticleList definition/import/render locations.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Separates definition, imports, and JSX render references."
+        },
+        {
+          "text": "Avoids dumping raw JSON or full source files."
+        }
+      ]
+    },
+    {
+      "id": "safe-rename-preview",
+      "prompt": "Preview renaming AppController to RootController in the pinned NestJS starter. Do not modify files; show what buckets need review.",
+      "expected_output": "A no-mutation rename preview with match counts and manual-review buckets.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Clearly states that no files were modified."
+        },
+        {
+          "text": "Identifies more than one reference bucket, such as imports, tests, definitions, exports, or strings."
+        },
+        {
+          "text": "Does not present a single ast-grep replacement as a complete rename."
+        }
+      ]
+    },
+    {
+      "id": "deletion-simulation",
+      "prompt": "Can I delete ./feature from the mixed module deletion fixture? Report runtime break candidates separately from type-only references.",
+      "expected_output": "A deletion simulation separating runtime candidates, type-only references, dynamic imports, CommonJS, and re-exports.",
+      "files": [
+        "test/fixtures/p2d/mixed-module-delete"
+      ],
+      "assertions": [
+        {
+          "text": "Separates type-only references from runtime break candidates."
+        },
+        {
+          "text": "Flags dynamic import and CommonJS require references when present."
+        },
+        {
+          "text": "Does not claim safe deletion when runtime break candidates exist."
+        }
+      ]
+    },
+    {
+      "id": "state-ownership-map",
+      "prompt": "Where does user state live in the React state fixture? Flag possible split-brain ownership if more than one owner exists.",
+      "expected_output": "A state ownership map identifying React context and Zustand store ownership for user state.",
+      "files": [
+        "test/fixtures/p2d/react-state"
+      ],
+      "assertions": [
+        {
+          "text": "Identifies both AuthContext and useUserStore or their files."
+        },
+        {
+          "text": "Flags possible split-brain state ownership when multiple owners overlap."
+        }
+      ]
+    },
+    {
+      "id": "impact-report-before-edit",
+      "prompt": "I want to change the signature of an exported service method. Before editing, tell me what analysis P2D should run and what risks you would report.",
+      "expected_output": "A pre-edit impact-analysis plan that includes discovery, trace/blast radius, tests, and verification.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Requires blast-radius or caller analysis before editing."
+        },
+        {
+          "text": "Mentions tests or type checks as verification."
+        },
+        {
+          "text": "Does not proceed directly to mutation."
+        }
+      ]
+    },
+    {
+      "id": "benchmark-report-generation",
+      "prompt": "Run the P2D benchmark summary and explain the results without overselling them.",
+      "expected_output": "A benchmark summary that reports token savings with recall, precision, and scope caveats.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Reports recall and precision with savings."
+        },
+        {
+          "text": "States that the current benchmark set is strong but not broad proof across all languages."
+        }
+      ]
+    },
+    {
+      "id": "fallback-mode-discovery",
+      "prompt": "Assume ast-grep and code-review-graph are unavailable. How should P2D find usages of Header in a medium-size JavaScript app?",
+      "expected_output": "A fallback discovery approach using targeted grep/git grep, file filters, line ranges, and clear limitations.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Uses targeted grep or git grep with file filters."
+        },
+        {
+          "text": "Avoids reading every file in full."
+        },
+        {
+          "text": "Labels the result as fallback or degraded mode."
+        }
+      ]
+    },
+    {
+      "id": "dirty-worktree-safety",
+      "prompt": "A surgical edit failed verification in a dirty git worktree. What should P2D do next?",
+      "expected_output": "A safe recovery plan that reviews the diff and reverts only agent-owned hunks.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Does not recommend broad destructive rollback such as git checkout -- ."
+        },
+        {
+          "text": "Mentions preserving unrelated user changes."
+        }
+      ]
+    },
+    {
+      "id": "module-move-planning",
+      "prompt": "Plan moving a shared module to a new package in a monorepo. Do not edit yet; tell me how P2D should discover importers and risks.",
+      "expected_output": "A module-move plan covering importers, re-exports, package boundaries, tests, and staged edits.",
+      "files": [],
+      "assertions": [
+        {
+          "text": "Includes importer and re-export discovery."
+        },
+        {
+          "text": "Mentions package boundary or monorepo impact."
+        },
+        {
+          "text": "Keeps the response as a plan rather than applying edits."
+        }
+      ]
+    }
+  ]
+}

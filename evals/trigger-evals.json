@@ -1,0 +1,125 @@
+{
+  "skill_name": "p2d",
+  "evals": [
+    {
+      "id": "trigger-rename-exported-service",
+      "query": "Before I rename this exported BillingService, can you map what depends on it and what tests are likely affected?",
+      "should_trigger": true,
+      "rationale": "Needs dependency and blast-radius analysis before a rename."
+    },
+    {
+      "id": "trigger-delete-module",
+      "query": "Can I delete packages/auth/src/session.ts safely or will imports/runtime flows break?",
+      "should_trigger": true,
+      "rationale": "Deletion simulation and dependency tracing are core P2D tasks."
+    },
+    {
+      "id": "trigger-state-ownership",
+      "query": "Where does auth/user state actually live in this React app? I see context and a zustand store and I'm worried they're duplicated.",
+      "should_trigger": true,
+      "rationale": "State ownership and split-brain detection should use P2D."
+    },
+    {
+      "id": "trigger-find-callers",
+      "query": "Find all callers of PaymentGateway. Please don't open every file; this repo is huge.",
+      "should_trigger": true,
+      "rationale": "Structural or targeted discovery is needed."
+    },
+    {
+      "id": "trigger-interface-change",
+      "query": "If I add a field to this shared TypeScript interface, what's the blast radius?",
+      "should_trigger": true,
+      "rationale": "Shared interface change risk requires impact analysis."
+    },
+    {
+      "id": "trigger-module-move",
+      "query": "Need to move the notifications module into a package. First show every importer and barrel export that will need updating.",
+      "should_trigger": true,
+      "rationale": "Module move planning is a P2D workflow."
+    },
+    {
+      "id": "trigger-benchmark",
+      "query": "Run P2D benchmarks here and show token savings with recall/precision, not just a vibes number.",
+      "should_trigger": true,
+      "rationale": "Benchmarking is explicitly supported."
+    },
+    {
+      "id": "trigger-safe-rename-preview",
+      "query": "Preview renaming Header to SiteHeader in this React app. No edits yet, just match buckets.",
+      "should_trigger": true,
+      "rationale": "No-mutation rename preview should use P2D."
+    },
+    {
+      "id": "trigger-code-smell-near-change",
+      "query": "Before changing this function signature, can you check for nearby as any, ts-ignore, and untested callers?",
+      "should_trigger": true,
+      "rationale": "P2D includes code-smell scanning around changes."
+    },
+    {
+      "id": "trigger-architecture-question",
+      "query": "What parts of the app depend on the auth module? I want a compact architecture impact map.",
+      "should_trigger": true,
+      "rationale": "Architecture impact mapping belongs to P2D."
+    },
+    {
+      "id": "not-trigger-ast-explanation",
+      "query": "Explain what an AST is to a junior developer.",
+      "should_trigger": false,
+      "rationale": "Concept explanation does not require P2D workflow."
+    },
+    {
+      "id": "not-trigger-simple-grep",
+      "query": "What's the exact grep command for finding TODO comments?",
+      "should_trigger": false,
+      "rationale": "Simple command help does not need the skill."
+    },
+    {
+      "id": "not-trigger-landing-page",
+      "query": "Create a polished React landing page for my new SaaS.",
+      "should_trigger": false,
+      "rationale": "Frontend design/build task, not structural code intelligence."
+    },
+    {
+      "id": "not-trigger-readme-summary",
+      "query": "Summarize this README in three bullets.",
+      "should_trigger": false,
+      "rationale": "Plain summarization should not trigger P2D."
+    },
+    {
+      "id": "not-trigger-debug-runtime-error",
+      "query": "My app throws Cannot read property map of undefined. Help me debug it.",
+      "should_trigger": false,
+      "rationale": "May need coding help, but not necessarily P2D unless dependency/refactor scope emerges."
+    },
+    {
+      "id": "not-trigger-write-unit-test",
+      "query": "Write unit tests for this small helper function.",
+      "should_trigger": false,
+      "rationale": "Simple test writing is outside P2D unless impact/discovery is needed."
+    },
+    {
+      "id": "not-trigger-package-update",
+      "query": "Update Next.js to the latest version and fix migration issues.",
+      "should_trigger": false,
+      "rationale": "Migration may involve code changes but is not specifically structural discovery unless requested."
+    },
+    {
+      "id": "not-trigger-api-design",
+      "query": "Design a REST API for invoices and payments.",
+      "should_trigger": false,
+      "rationale": "Architecture design from scratch does not require P2D codebase scanning."
+    },
+    {
+      "id": "not-trigger-formatting",
+      "query": "Run prettier on this repo.",
+      "should_trigger": false,
+      "rationale": "Formatting is mechanical and outside P2D."
+    },
+    {
+      "id": "not-trigger-small-file-edit",
+      "query": "In this 20-line file, rename foo to bar.",
+      "should_trigger": false,
+      "rationale": "A tiny isolated edit does not need the full P2D protocol."
+    }
+  ]
+}
