@@ -1,0 +1,125 @@
+#!/usr/bin/env python3
+"""Fetch pinned external benchmark repos and run configured P2D targets."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import subprocess
+import sys
+from pathlib import Path
+
+
+SCRIPT_DIR = Path(__file__).resolve().parent
+SKILL_DIR = SCRIPT_DIR.parent
+WORKSPACE_ROOT = SKILL_DIR.parent.parent
+DEFAULT_CONFIG = SKILL_DIR / "benchmarks/repos.json"
+DEFAULT_BENCH_ROOT = WORKSPACE_ROOT / ".p2d-bench/repos"
+
+
+def run(command: list[str], cwd: Path | None = None, check: bool = True) -> subprocess.CompletedProcess:
+    result = subprocess.run(command, cwd=cwd, text=True, capture_output=True, check=False)
+    if check and result.returncode != 0:
+        raise RuntimeError(
+            f"command failed: {' '.join(command)}\nstdout:\n{result.stdout}\nstderr:\n{result.stderr}"
+        )
+    return result
+
+
+def load_config(path: Path) -> dict:
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def select_repo(config: dict, repo_id: str) -> dict:
+    for repo in config["repos"]:
+        if repo["id"] == repo_id:
+            return repo
+    choices = ", ".join(repo["id"] for repo in config["repos"])
+    raise SystemExit(f"Unknown repo id '{repo_id}'. Available: {choices}")
+
+
+def ensure_repo(repo: dict, bench_root: Path) -> Path:
+    bench_root.mkdir(parents=True, exist_ok=True)
+    dest = bench_root / repo["id"]
+    if not (dest / ".git").exists():
+        run(["git", "clone", "--filter=blob:none", repo["url"], str(dest)])
+    run(["git", "fetch", "--depth", "1", "origin", repo["commit"]], cwd=dest, check=False)
+    run(["git", "checkout", "--detach", repo["commit"]], cwd=dest)
+    return dest
+
+
+def write_expected(repo_dir: Path, target: dict, output_dir: Path) -> Path:
+    output_dir.mkdir(parents=True, exist_ok=True)
+    path = output_dir / f"{target['symbol']}.expected.json"
+    data = {"symbol": target["symbol"], "files": target.get("expected_files", [])}
+    path.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    return path
+
+
+def run_targets(repo: dict, repo_dir: Path, json_output: bool) -> list[dict]:
+    results = []
+    expected_dir = repo_dir.parent / "_expected" / repo["id"]
+    for target in repo.get("targets", []):
+        if not target.get("expected_files"):
+            continue
+        expected_path = write_expected(repo_dir, target, expected_dir)
+        command = [
+            sys.executable,
+            str(SCRIPT_DIR / "p2d-benchmark"),
+            target["symbol"],
+            "--root",
+            str(repo_dir),
+            "--expected",
+            str(expected_path),
+            "--json",
+        ]
+        result = run(command, check=False)
+        try:
+            payload = json.loads(result.stdout)
+        except json.JSONDecodeError:
+            payload = {"symbol": target["symbol"], "error": result.stderr or result.stdout}
+        payload["exit_code"] = result.returncode
+        results.append(payload)
+        if not json_output:
+            print(f"{repo['id']} :: {target['symbol']}")
+            if "error" in payload:
+                print(f"- error: {payload['error']}")
+            else:
+                print(f"- savings: {payload['savings_percent']}%")
+                print(f"- recall: {payload['recall_percent']}%")
+                print(f"- precision: {payload['precision_percent']}%")
+                if payload["false_negative_files"]:
+                    print(f"- false negatives: {', '.join(payload['false_negative_files'])}")
+    return results
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Fetch and benchmark pinned external repos")
+    parser.add_argument("repo_id", nargs="?", help="Repo id from benchmarks/repos.json")
+    parser.add_argument("--config", default=str(DEFAULT_CONFIG), help="Benchmark repo config")
+    parser.add_argument("--bench-root", default=str(DEFAULT_BENCH_ROOT), help="Clone destination")
+    parser.add_argument("--list", action="store_true", help="List configured repos")
+    parser.add_argument("--json", action="store_true", help="Emit JSON")
+    args = parser.parse_args()
+
+    config = load_config(Path(args.config).resolve())
+    if args.list:
+        for repo in config["repos"]:
+            print(f"{repo['id']}: {repo['url']} @ {repo['commit']}")
+        return 0
+    if not args.repo_id:
+        raise SystemExit("repo_id is required unless --list is used")
+
+    repo = select_repo(config, args.repo_id)
+    repo_dir = ensure_repo(repo, Path(args.bench_root).resolve())
+    results = run_targets(repo, repo_dir, args.json)
+    report = {"repo": repo["id"], "path": str(repo_dir), "results": results}
+
+    if args.json:
+        print(json.dumps(report, indent=2, sort_keys=True))
+    failures = [result for result in results if result.get("exit_code") != 0]
+    return 1 if failures else 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

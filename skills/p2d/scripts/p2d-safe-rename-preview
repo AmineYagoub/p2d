@@ -1,0 +1,45 @@
+#!/usr/bin/env python3
+"""Preview rename impact without mutating files."""
+
+from __future__ import annotations
+
+import argparse
+from pathlib import Path
+
+from p2d_common import as_json, bucket_counts, find_symbol, refs_as_dicts
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Preview a symbol rename")
+    parser.add_argument("old_symbol")
+    parser.add_argument("new_symbol")
+    parser.add_argument("--root", default=".")
+    parser.add_argument("--json", action="store_true")
+    args = parser.parse_args()
+
+    refs = find_symbol(Path(args.root).resolve(), args.old_symbol)
+    report = {
+        "old_symbol": args.old_symbol,
+        "new_symbol": args.new_symbol,
+        "total_matches": len(refs),
+        "categories": bucket_counts(refs),
+        "requires_review": sorted({ref.category for ref in refs if ref.category in {"string", "config", "export"}}),
+        "references": refs_as_dicts(refs),
+    }
+
+    if args.json:
+        print(as_json(report))
+        return 0
+
+    print(f"Rename preview: {args.old_symbol} -> {args.new_symbol}")
+    print(f"- matches: {len(refs)}")
+    for category, count in report["categories"].items():
+        print(f"- {category}: {count}")
+    if report["requires_review"]:
+        print(f"- manual review buckets: {', '.join(report['requires_review'])}")
+    print("No files were modified.")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

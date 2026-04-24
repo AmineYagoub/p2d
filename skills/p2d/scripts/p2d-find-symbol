@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+"""Find symbol references and categorize them without reading full files aloud."""
+
+from __future__ import annotations
+
+import argparse
+from pathlib import Path
+
+from p2d_common import add_common_args, as_json, bucket_counts, find_symbol, refs_as_dicts
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Find and categorize symbol references")
+    add_common_args(parser)
+    parser.add_argument("symbol", help="Symbol to find")
+    args = parser.parse_args()
+
+    refs = find_symbol(Path(args.root).resolve(), args.symbol)
+    report = {
+        "symbol": args.symbol,
+        "total": len(refs),
+        "categories": bucket_counts(refs),
+        "references": refs_as_dicts(refs),
+    }
+    if args.json:
+        print(as_json(report))
+        return 0
+
+    print(f"Found {len(refs)} references to {args.symbol}")
+    for category, count in report["categories"].items():
+        print(f"- {category}: {count}")
+    for ref in refs:
+        print(f"{ref.file}:{ref.line} [{ref.category}] {ref.text}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

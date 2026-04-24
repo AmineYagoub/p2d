@@ -1,0 +1,101 @@
+#!/usr/bin/env python3
+"""Run bundled P2D fixture checks."""
+
+from __future__ import annotations
+
+import json
+import subprocess
+import sys
+from pathlib import Path
+
+
+SCRIPT_DIR = Path(__file__).resolve().parent
+SKILL_DIR = SCRIPT_DIR.parent
+REPO_ROOT = SKILL_DIR.parent.parent
+FIXTURE_DIR = REPO_ROOT / "test/fixtures/p2d"
+
+
+def run_json(command: list[str], allow_failure: bool = False) -> dict:
+    result = subprocess.run(command, text=True, capture_output=True, check=False)
+    if result.returncode != 0 and not allow_failure:
+        raise RuntimeError(result.stderr or result.stdout)
+    return json.loads(result.stdout)
+
+
+def check_benchmark() -> list[str]:
+    report = run_json(
+        [
+            sys.executable,
+            str(SCRIPT_DIR / "p2d-benchmark"),
+            "UserService",
+            "--root",
+            str(FIXTURE_DIR / "typescript-nest"),
+            "--expected",
+            str(FIXTURE_DIR / "expected/typescript-nest-UserService.json"),
+            "--json",
+        ]
+    )
+    errors = []
+    if report["recall_percent"] != 100.0:
+        errors.append(f"symbol recall was {report['recall_percent']}%")
+    if report["precision_percent"] != 100.0:
+        errors.append(f"symbol precision was {report['precision_percent']}%")
+    return errors
+
+
+def check_state_map() -> list[str]:
+    report = run_json(
+        [
+            sys.executable,
+            str(SCRIPT_DIR / "p2d-state-map"),
+            "user",
+            "--root",
+            str(FIXTURE_DIR / "react-state"),
+            "--json",
+        ]
+    )
+    expected = json.loads((FIXTURE_DIR / "expected/react-state-user.json").read_text())
+    found = {owner["file"] for owner in report["owners"]}
+    missing = set(expected["owner_files"]) - found
+    return [f"state mapper missed {sorted(missing)}"] if missing else []
+
+
+def check_deletion_sim() -> list[str]:
+    report = run_json(
+        [
+            sys.executable,
+            str(SCRIPT_DIR / "p2d-deletion-sim"),
+            "./feature",
+            "--root",
+            str(FIXTURE_DIR / "mixed-module-delete"),
+            "--json",
+        ],
+        allow_failure=True,
+    )
+    expected = json.loads((FIXTURE_DIR / "expected/mixed-module-delete-feature.json").read_text())
+    runtime_files = {ref["file"] for ref in report["references"] if ref["kind"] != "type-only"}
+    missing = set(expected["runtime_break_candidates"]) - runtime_files
+    errors = [f"deletion sim missed runtime files {sorted(missing)}"] if missing else []
+    if report["runtime_break_candidates"] != len(expected["runtime_break_candidates"]):
+        errors.append(
+            f"runtime candidate count was {report['runtime_break_candidates']}, expected {len(expected['runtime_break_candidates'])}"
+        )
+    return errors
+
+
+def main() -> int:
+    errors = []
+    errors.extend(check_benchmark())
+    errors.extend(check_state_map())
+    errors.extend(check_deletion_sim())
+    if errors:
+        print("P2D fixture checks failed:")
+        for error in errors:
+            print(f"- {error}")
+        return 1
+    print("P2D fixture checks passed.")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

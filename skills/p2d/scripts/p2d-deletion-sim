@@ -1,0 +1,73 @@
+#!/usr/bin/env python3
+"""Simulate deleting a module by finding static and dynamic references."""
+
+from __future__ import annotations
+
+import argparse
+import re
+from pathlib import Path
+
+from p2d_common import as_json, iter_source_files, rel, safe_read
+
+
+def classify(text: str) -> str:
+    stripped = text.strip()
+    if stripped.startswith("import type") or stripped.startswith("export type") or "import type" in stripped:
+        return "type-only"
+    if "import(" in stripped:
+        return "dynamic-import"
+    if "require(" in stripped:
+        return "commonjs"
+    if stripped.startswith("export") and "from" in stripped:
+        return "re-export"
+    if "import" in stripped or "from" in stripped:
+        return "static-import"
+    return "other-reference"
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Simulate module deletion")
+    parser.add_argument("module", help="Module path/name substring to remove")
+    parser.add_argument("--root", default=".")
+    parser.add_argument("--json", action="store_true")
+    args = parser.parse_args()
+
+    root = Path(args.root).resolve()
+    pattern = re.compile(re.escape(args.module))
+    refs = []
+    for path in iter_source_files(root):
+        for line_no, line in enumerate(safe_read(path).splitlines(), start=1):
+            if pattern.search(line):
+                refs.append(
+                    {
+                        "file": rel(path, root),
+                        "line": line_no,
+                        "kind": classify(line),
+                        "text": line.strip(),
+                    }
+                )
+
+    runtime = [ref for ref in refs if ref["kind"] not in {"type-only"}]
+    report = {
+        "module": args.module,
+        "total_references": len(refs),
+        "runtime_break_candidates": len(runtime),
+        "safe_to_delete": len(runtime) == 0,
+        "references": refs,
+    }
+
+    if args.json:
+        print(as_json(report))
+        return 0 if report["safe_to_delete"] else 1
+
+    print(f"Deletion simulation: {args.module}")
+    print(f"- references: {len(refs)}")
+    print(f"- runtime break candidates: {len(runtime)}")
+    print(f"- safe to delete: {'yes' if report['safe_to_delete'] else 'no'}")
+    for ref in refs:
+        print(f"{ref['file']}:{ref['line']} [{ref['kind']}] {ref['text']}")
+    return 0 if report["safe_to_delete"] else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

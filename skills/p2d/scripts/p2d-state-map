@@ -1,0 +1,65 @@
+#!/usr/bin/env python3
+"""Map likely state owners for one or more domain terms."""
+
+from __future__ import annotations
+
+import argparse
+import re
+from pathlib import Path
+
+from p2d_common import as_json, iter_source_files, rel, safe_read
+
+
+STATE_PATTERNS = {
+    "nestjs-injectable": re.compile(r"@Injectable|class\s+\w+Service\b"),
+    "react-context": re.compile(r"createContext|useContext|\.Provider\b"),
+    "zustand": re.compile(r"\bcreate\s*(<[^>]+>)?\s*\("),
+    "valtio": re.compile(r"\bproxy\s*\("),
+    "jotai": re.compile(r"\batom\s*\("),
+    "pinia": re.compile(r"\bdefineStore\s*\("),
+    "svelte-store": re.compile(r"\b(writable|readable|derived)\s*\("),
+    "fastapi-state": re.compile(r"Depends\s*\(|app\.state"),
+}
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description="Map state ownership by domain terms")
+    parser.add_argument("terms", nargs="+", help="Domain terms, e.g. user auth session")
+    parser.add_argument("--root", default=".")
+    parser.add_argument("--json", action="store_true")
+    args = parser.parse_args()
+
+    root = Path(args.root).resolve()
+    term_pattern = re.compile("|".join(re.escape(term) for term in args.terms), re.IGNORECASE)
+    owners = []
+    for path in iter_source_files(root):
+        text = safe_read(path)
+        if not term_pattern.search(text):
+            continue
+        matched_kinds = [name for name, pattern in STATE_PATTERNS.items() if pattern.search(text)]
+        if matched_kinds:
+            owners.append({"file": rel(path, root), "kinds": matched_kinds})
+
+    report = {
+        "terms": args.terms,
+        "owners": owners,
+        "potential_split_brain": len(owners) > 1,
+    }
+
+    if args.json:
+        print(as_json(report))
+        return 0
+
+    print(f"State ownership map for: {', '.join(args.terms)}")
+    if not owners:
+        print("- no likely state owners found")
+        return 0
+    for owner in owners:
+        print(f"- {owner['file']}: {', '.join(owner['kinds'])}")
+    if report["potential_split_brain"]:
+        print("Potential split-brain: multiple owners mention the same domain terms.")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
