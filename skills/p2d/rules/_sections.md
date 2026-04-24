@@ -33,9 +33,14 @@ The section ID (in parentheses) is the filename used for each rule.
 ## 6. Multi-Tool Strategies & Code Smell Detection (strategies)
 
 **Impact:** HIGH
-**Description:** Encodes architectural judgment through multi-tool orchestration strategies (safe rename, interface risk assessment, architecture-aware refactoring, monorepo cross-package changes) and code smell detection patterns (type safety bypasses, untested callers, hub/bridge nodes, empty catch blocks). Combines tools in non-obvious ways that no single tool can achieve alone.
+**Description:** Encodes architectural judgment through multi-tool orchestration strategies (safe rename, interface risk assessment, architecture-aware refactoring, monorepo cross-package changes, deletion test) and code smell detection patterns (type safety bypasses, untested callers, hub/bridge nodes, empty catch blocks). Combines tools in non-obvious ways that no single tool can achieve alone.
 
-## 7. Agent-Run Benchmarks (benchmark)
+## 7. State Ownership Mapper (state-mapper)
+
+**Impact:** HIGH
+**Description:** Before creating new state (providers, contexts, stores), scans the codebase for existing state owners in the same domain. Prevents split-brain bugs where two separate sources of truth diverge. Supports NestJS @Injectable providers, React createContext/useContext, and Valtio/Zustand/Jotai stores. Includes split-brain detection for overlapping state.
+
+## 8. Agent-Run Benchmarks (benchmark)
 
 **Impact:** MEDIUM
-**Description:** When the user asks to measure P2D savings, the agent runs real benchmarks against their actual codebase. Picks 3 symbols at different scales (small/medium/large), measures standard vs P2D token consumption using real tool output, and presents a comparison table. No simulation — honest measurements from real commands.
+**Description:** When the user asks to measure P2D savings, the agent runs recall-aware benchmarks against fixtures or the actual codebase. Measures standard vs P2D token consumption, recall, precision, false negatives, and false positives. Token savings are never reported without accuracy.

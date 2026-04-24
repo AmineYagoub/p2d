@@ -156,6 +156,52 @@ Quick validation that an edit is safe before applying it.
 
 4. **Apply the edit.** Run type checker immediately after.
 
+### Strategy: Deletion Test (Surgical Simulation)
+
+Before deleting or removing a module, simulate the deletion and report
+what would break — without touching any code.
+
+1. **Run the bundled deletion simulation:**
+   ```bash
+   skills/p2d/scripts/p2d-deletion-sim ./path/to/module --root .
+   ```
+
+2. **Review every bucket:** static imports, type-only imports, re-exports,
+   dynamic imports, CommonJS `require`, tests, and other string references.
+
+3. **If code-review-graph is available:**
+   Call `query_graph_tool` with the module name, query types: `imports`, `callers`.
+   This gives a complete dependency graph from the module.
+
+4. **Check package and framework surfaces:** package `exports`, barrels,
+   route registration, DI containers, plugin registries, config files, and
+   runtime string lookups can keep a module alive even when static imports are
+   gone.
+
+5. **Separate type-only from runtime breakage:** type-only imports disappear at
+   runtime, but still require compile-time cleanup.
+
+6. **Report the deletion simulation:**
+   ```
+   Deletion simulation for [module]:
+     Direct imports: 12 files
+       - src/auth/service.ts (runtime dependency — WILL BREAK)
+       - src/api/controller.ts (runtime dependency — WILL BREAK)
+       - src/types/index.ts (type-only import — safe to remove)
+     Re-exports: 2 files
+       - src/index.ts (barrel export — removal hides module from consumers)
+     Test files: 3
+       - tests/auth.test.ts (test will fail)
+     Execution flows affected: 2 (if code-review-graph available)
+     Estimated breakage: 8 runtime candidates, 3 test candidates
+     Safe to delete? NO — requires migration of 8 import sites first
+   ```
+
+**Why this matters:** This is the architectural equivalent of "measure twice,
+cut once." By simulating the deletion, you understand the full dependency
+surface before committing to the removal. This prevents the cascading
+breakage that turns a "simple cleanup" into a multi-day rescue effort.
+
 ---
 
 ## Code Smell Detection

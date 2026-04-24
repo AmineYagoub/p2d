@@ -43,23 +43,32 @@ If both are missing, fall back to the native Edit tool with line-specific edits.
 
 ast-grep supports inline replacement with the `-r` flag.
 
-### Symbol Rename
+### Symbol Rename Preview
 
 ```bash
-# Rename a function call
-sg -p 'oldFunctionName($$$ARGS)' -r 'newFunctionName($$$ARGS)' -l ts
+# First preview the complete match set. Do not mutate files yet.
+skills/p2d/scripts/p2d-safe-rename-preview oldFunctionName newFunctionName --root .
+```
 
-# Rename a class
-sg -p 'class OldName { $$$ }' -r 'class NewName { $$$ }' -l ts
+Only apply ast-grep replacements after the preview includes every required
+bucket: definitions, imports, exports, calls, strings/config references, and
+tests. A single pattern rarely covers all buckets.
+
+```bash
+# Example sketch after preview, scoped to function calls only
+sg -p 'oldFunctionName($$$ARGS)' -r 'newFunctionName($$$ARGS)' -l ts
 ```
 
 ### Signature Change
 
+Treat these as sketches, not complete recipes. Signature changes require Phase
+2 caller discovery, a match-count preview, and type/test verification.
+
 ```bash
-# Add a parameter
+# Add a parameter to known call sites only after caller review
 sg -p 'myFunc($$$ARGS)' -r 'myFunc($$$ARGS, newParam)' -l ts
 
-# Remove a parameter
+# Remove a parameter only after confirming argument position and semantics
 sg -p 'myFunc($$$A, $REMOVED, $$$B)' -r 'myFunc($$$A, $$$B)' -l ts
 ```
 
@@ -199,8 +208,9 @@ After any surgical edit, verify correctness:
 2. Check if the replacement missed any references (run discovery again)
 3. If tests fail, read the test file to understand expected behavior
 4. Consider using `git diff` to review all changes at once
-5. If the change is too invasive, revert with `git checkout -- .` and plan a
-   more incremental approach
+5. If the change is too invasive, stop and review `git diff`. Revert only the
+   hunks created by this agent. Never use broad rollback commands that discard
+   unrelated user work.
 
 ### Token Savings
 
@@ -212,6 +222,7 @@ After any surgical edit, verify correctness:
 
 - NEVER rewrite an entire 500-line file to change 3 lines
 - NEVER use full-file output when a targeted edit suffices
+- NEVER use broad destructive rollback such as `git checkout -- .`
 - Do NOT skip verification after surgical edits
 - Do NOT apply replacements without running Phase 2 first — always confirm
   the match set matches expectations
