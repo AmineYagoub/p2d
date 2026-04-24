@@ -71,9 +71,11 @@ npx skills add /path/to/p2d --list
 
 ## Running Benchmarks
 
-```bash
-cd benchmark
-python3 benchmark_tool.py --repo /path/to/target/repo --task tasks/find-usages.json
+Ask the agent to run benchmarks against the current codebase:
+
+```
+"run P2D benchmarks"
+"show me the token savings"
 ```
 
-See `benchmark/README.md` for full usage.
+The benchmark procedure is defined in `skills/p2d/rules/benchmark.md`.
