@@ -34,3 +34,8 @@ The section ID (in parentheses) is the filename used for each rule.
 
 **Impact:** HIGH
 **Description:** Encodes architectural judgment through multi-tool orchestration strategies (safe rename, interface risk assessment, architecture-aware refactoring, monorepo cross-package changes) and code smell detection patterns (type safety bypasses, untested callers, hub/bridge nodes, empty catch blocks). Combines tools in non-obvious ways that no single tool can achieve alone.
+
+## 7. Agent-Run Benchmarks (benchmark)
+
+**Impact:** MEDIUM
+**Description:** When the user asks to measure P2D savings, the agent runs real benchmarks against their actual codebase. Picks 3 symbols at different scales (small/medium/large), measures standard vs P2D token consumption using real tool output, and presents a comparison table. No simulation — honest measurements from real commands.
