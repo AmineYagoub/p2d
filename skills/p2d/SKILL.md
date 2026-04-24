@@ -13,7 +13,7 @@ description: >-
 license: MIT
 metadata:
   author: p2d
-  version: "1.1.0"
+  version: '1.1.1'
 ---
 
 # P2D: Orchestrated Determinism
@@ -35,6 +35,7 @@ Use this protocol when the user:
 Execute phases based on the decision trees below. Not every task needs all phases.
 
 ### Phase 1: Structural Discovery (ast-grep)
+
 **Priority: CRITICAL**
 
 Use ast-grep for structural pattern matching instead of grep or read.
@@ -46,6 +47,7 @@ imports, type assertions), advanced relational rules, and failure recovery.
 Read the detailed instructions: `rules/discovery.md`
 
 ### Phase 2: Trace & Impact Analysis (code-review-graph)
+
 **Priority: HIGH**
 
 Before suggesting any edit, run dependency/impact analysis.
@@ -59,6 +61,7 @@ rules when code-review-graph is unavailable.
 Read the detailed instructions: `rules/trace.md`
 
 ### Phase 3: Surgical Execution (Codemod / Tree-sitter)
+
 **Priority: HIGH**
 
 For changes involving less than 20% of a file's code, perform targeted
