@@ -1,0 +1,3 @@
+display_name: "P2D"
+short_description: "Structural code intelligence with measurable token savings."
+default_prompt: "Run P2D on this codebase: check prerequisites, find structural references, map impact, and report token savings with recall and precision."
