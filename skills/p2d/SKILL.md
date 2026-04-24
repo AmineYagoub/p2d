@@ -12,7 +12,7 @@ description: >-
 license: MIT
 metadata:
   author: p2d
-  version: "1.2.0"
+  version: "1.0.1"
 ---
 
 # P2D: Orchestrated Determinism
