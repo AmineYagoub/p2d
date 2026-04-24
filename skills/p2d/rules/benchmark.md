@@ -11,6 +11,21 @@ When the user asks to run benchmarks, measure P2D savings on their actual
 codebase using real tools. No simulation — run actual commands and count
 real output.
 
+### Step 0: Prerequisites Check
+
+Before running any benchmark, check which tools are available:
+
+```bash
+sg --version 2>/dev/null && echo "ast-grep: YES" || echo "ast-grep: NO"
+code-review-graph --version 2>/dev/null && echo "code-review-graph: YES" || echo "code-review-graph: NO"
+```
+
+Report available tools to the user. If ast-grep or code-review-graph are
+missing, offer to install them (see `rules/auto-install.md`).
+
+If the user declines to install, note that benchmarks will run in fallback
+mode (targeted grep only) — which is still highly effective.
+
 ### Trigger Phrases
 
 - "run P2D benchmarks"

@@ -10,6 +10,18 @@ tags: surgeon, codemod, tree-sitter, AST edit, surgical, node swap
 For changes involving less than 20% of a file's code, perform targeted
 AST node swaps instead of full file rewrites.
 
+### Prerequisites
+
+Before using ast-grep replacement or Codemod, check availability:
+
+```bash
+sg --version 2>/dev/null || echo "ast-grep not found"
+npx codemod --version 2>/dev/null || echo "codemod not found"
+```
+
+If ast-grep is missing, suggest: `npm install -g @ast-grep/cli` or `brew install ast-grep`.
+If both are missing, fall back to the native Edit tool with line-specific edits.
+
 ### When to Use This Rule
 
 - Renaming a symbol across multiple files

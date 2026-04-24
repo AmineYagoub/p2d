@@ -10,6 +10,17 @@ tags: discovery, ast-grep, structural search, pattern matching, token optimizati
 Use ast-grep to find exact AST nodes by structural pattern instead of
 grepping for text. This is the single highest-impact rule in P2D.
 
+### Prerequisites
+
+Before using this rule, check if ast-grep is available. If not, offer to
+install it or fall back to `rules/fallback.md`.
+
+```bash
+sg --version 2>/dev/null || echo "ast-grep not found"
+```
+
+If missing, suggest: `npm install -g @ast-grep/cli` or `brew install ast-grep`.
+
 ### When to Use This Rule
 
 - User asks to find, locate, or list symbols (classes, functions, methods, variables)

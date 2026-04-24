@@ -11,6 +11,20 @@ Before suggesting any code edit, map the dependency graph to understand
 the "blast radius" of the proposed change. This phase prevents regressions
 by identifying every module, function, or import that depends on the target.
 
+### Prerequisites
+
+Before using code-review-graph MCP tools, check if it's installed and the
+graph is built. If not, offer to install or fall back to ast-grep/grep.
+
+```bash
+code-review-graph --version 2>/dev/null || echo "code-review-graph not found"
+code-review-graph status 2>/dev/null || echo "graph not built"
+```
+
+If missing, suggest: `pip install code-review-graph && code-review-graph install && code-review-graph build`.
+
+If the user declines, use the fallback methods documented later in this rule.
+
 ### When to Use This Rule
 
 - Before renaming a symbol
