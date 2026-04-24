@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "repos": [
+    {
+      "id": "nestjs-typescript-starter",
+      "description": "Small real NestJS application used as an external smoke benchmark.",
+      "url": "https://github.com/nestjs/typescript-starter.git",
+      "commit": "c4d9330f5513eda0fb5df594f6b34a11fde1a934",
+      "targets": [
+        {
+          "symbol": "AppService",
+          "expected_files": [
+            "src/app.controller.spec.ts",
+            "src/app.controller.ts",
+            "src/app.module.ts",
+            "src/app.service.ts"
+          ]
+        },
+        {
+          "symbol": "AppController",
+          "expected_files": [
+            "src/app.controller.spec.ts",
+            "src/app.controller.ts",
+            "src/app.module.ts",
+            "test/app.e2e-spec.ts"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "react-redux-realworld",
+      "description": "Pinned React/Redux RealWorld app for larger external benchmark exploration.",
+      "url": "https://github.com/gothinkster/react-redux-realworld-example-app.git",
+      "commit": "ee72eba4056392c95a27bc48d385d3f54ba38a18",
+      "targets": [
+        {
+          "symbol": "ArticleList",
+          "expected_files": [
+            "src/components/ArticleList.js",
+            "src/components/Home/MainView.js",
+            "src/components/Profile.js"
+          ]
+        },
+        {
+          "symbol": "Header",
+          "expected_files": [
+            "src/components/App.js",
+            "src/components/Header.js"
+          ]
+        },
+        {
+          "symbol": "articleList",
+          "expected_files": [
+            "src/components/Home/MainView.js",
+            "src/components/Profile.js",
+            "src/reducer.js"
+          ]
+        }
+      ]
+    }
+  ]
+}
