@@ -1,0 +1,10 @@
+{
+  "symbol": "UserService",
+  "files": [
+    "src/auth.service.ts",
+    "src/index.ts",
+    "src/user.module.ts",
+    "src/user.service.ts",
+    "test/user.service.spec.ts"
+  ]
+}

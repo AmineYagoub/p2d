@@ -1,0 +1,7 @@
+{
+  "terms": ["user"],
+  "owner_files": [
+    "src/auth-context.tsx",
+    "src/user-store.ts"
+  ]
+}

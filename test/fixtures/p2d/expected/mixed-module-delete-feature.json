@@ -1,0 +1,13 @@
+{
+  "module": "./feature",
+  "runtime_break_candidates": [
+    "src/commonjs.js",
+    "src/consumer.ts",
+    "src/index.ts",
+    "src/lazy.ts"
+  ],
+  "type_only_files": [
+    "src/consumer.ts",
+    "src/index.ts"
+  ]
+}
