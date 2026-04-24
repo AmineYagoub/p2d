@@ -16,6 +16,7 @@ SKILL_DIR = SCRIPT_DIR.parent
 WORKSPACE_ROOT = SKILL_DIR.parent.parent
 DEFAULT_CONFIG = SKILL_DIR / "benchmarks/repos.json"
 DEFAULT_RESULTS_DIR = WORKSPACE_ROOT / "benchmark/results"
+FIXTURE_DIR = WORKSPACE_ROOT / "test/fixtures/p2d"
 
 
 def run(command: list[str], check: bool = False) -> subprocess.CompletedProcess:
@@ -27,10 +28,19 @@ def load_config(path: Path) -> dict:
 
 
 def run_fixture_check() -> dict:
+    if not FIXTURE_DIR.exists():
+        return {
+            "name": "fixture-check",
+            "exit_code": 0,
+            "status": "skipped",
+            "stdout": "Dev-only fixtures not present; skipped fixture check.",
+            "stderr": "",
+        }
     result = run([sys.executable, str(SCRIPT_DIR / "p2d-fixture-check")])
     return {
         "name": "fixture-check",
         "exit_code": result.returncode,
+        "status": "passed" if result.returncode == 0 else "failed",
         "stdout": result.stdout.strip(),
         "stderr": result.stderr.strip(),
     }
@@ -78,7 +88,9 @@ def flatten_results(report: dict) -> list[dict]:
 
 
 def print_summary(report: dict) -> None:
-    fixture_status = "passed" if report["fixture_check"]["exit_code"] == 0 else "failed"
+    fixture_status = report["fixture_check"].get(
+        "status", "passed" if report["fixture_check"]["exit_code"] == 0 else "failed"
+    )
     print(f"Fixture check: {fixture_status}")
     for row in flatten_results(report):
         print(

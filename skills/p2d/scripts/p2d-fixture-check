@@ -84,6 +84,10 @@ def check_deletion_sim() -> list[str]:
 
 
 def main() -> int:
+    if not FIXTURE_DIR.exists():
+        print(f"P2D fixture directory not found: {FIXTURE_DIR}")
+        print("Fixtures are dev-only and are not required for installed skill usage.")
+        return 2
     errors = []
     errors.extend(check_benchmark())
     errors.extend(check_state_map())
