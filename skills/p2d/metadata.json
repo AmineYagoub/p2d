@@ -1,8 +1,8 @@
 {
-  "version": "1.1.1",
+  "version": "1.2.0",
   "organization": "P2D",
   "date": "April 2026",
-  "abstract": "An AI agent skill that orchestrates ast-grep, code-review-graph (MCP), and Codemod to move code intelligence from probabilistic (text-based grep/read) to deterministic (AST-structured navigation and editing). Contains 6 rule categories: structural discovery with a deep pattern catalog, dependency tracing via MCP tools with architecture-level analysis, surgical AST execution, graceful fallback with heuristics, auto-install for missing tools, and multi-tool orchestration strategies with code smell detection. Includes context-sensitive decision trees that skip unnecessary phases based on symbol type and change scope. Designed to reduce token consumption by 70-95% in large codebase operations.",
+  "abstract": "An AI agent skill that orchestrates ast-grep, code-review-graph (MCP), Codemod, and bundled fallback scripts to move code intelligence from probabilistic (text-based grep/read) to deterministic, measurable navigation and editing. Contains 8 rule categories: structural discovery, dependency tracing, surgical execution, graceful fallback, auto-install, multi-tool strategies, state ownership mapping, and recall-aware benchmarking. Includes a runnable harness, fixtures, and evaluation criteria so token savings are reported with recall, precision, false negatives, and false positives.",
   "references": [
     "https://ast-grep.github.io",
     "https://github.com/tirth8205/code-review-graph",

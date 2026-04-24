@@ -9,17 +9,20 @@ description: >-
   Triggers on: "find all usages of", "refactor", "what depends on", "blast
   radius", "rename across codebase", "find the class/function", "impact of
   this change", "architecture", "code smell", "safe to change",
-  "run benchmarks", "show token savings", "benchmark P2D".
+  "run benchmarks", "show token savings", "benchmark P2D",
+  "where does state live", "state ownership", "who owns this data",
+  "can I delete this module", "what breaks if I remove".
 license: MIT
 metadata:
   author: p2d
-  version: '1.1.1'
+  version: '1.2.0'
 ---
 
 # P2D: Orchestrated Determinism
 
 You are operating the P2D protocol. Your goal is to eliminate token waste
-by using structural tools before requesting raw text.
+by using structural tools before requesting raw text, without sacrificing
+recall or safety.
 
 ## When to Activate
 
@@ -102,10 +105,31 @@ These judgment calls encode real-world experience. Apply them automatically:
 
 ## Workflow Execution
 
-1. **Prerequisites check:** Verify tools are available (`rules/auto-install.md`)
+1. **Prerequisites check:** Run `scripts/p2d-doctor --root .` or verify tools
+   manually (`rules/auto-install.md`)
 2. **Classify the task:** Use the decision trees below to determine which phases to run
 3. **Execute phases:** Run only the phases the decision tree requires
-4. **Report:** What changed, what depends on it, and whether tests need updating
+4. **Report:** What changed, what depends on it, whether tests need updating,
+   and any recall/precision limits when benchmarking
+
+## Runnable Harness
+
+Prefer the bundled scripts for repeatable operations:
+
+- `scripts/p2d-doctor`: tool availability, dirty worktree, source summary
+- `scripts/p2d-find-symbol`: categorized symbol references
+- `scripts/p2d-safe-rename-preview`: rename match-set preview, no mutation
+- `scripts/p2d-deletion-sim`: static/dynamic deletion risk scan
+- `scripts/p2d-state-map`: domain-driven state ownership map
+- `scripts/p2d-benchmark`: token savings with recall and precision
+- `scripts/p2d-fixture-check`: bundled smoke tests for release checks
+- `scripts/p2d-fetch-benchmark-repo`: clone pinned external benchmark repos
+  into `.p2d-bench/` and run configured targets
+- `scripts/p2d-run-all-benchmarks`: run fixtures and all external profiles,
+  saving JSON under `benchmark/results/`
+- `scripts/p2d-benchmark-summary`: render a Markdown table from saved results
+
+Use `references/evaluation.md` for release-quality metrics.
 
 ## Decision Trees
 
@@ -156,7 +180,9 @@ Database model, API schema, or shared config
 
 ```
 Simple rename (no signature change)
-  → ast-grep -r directly. Verify with type checker.
+  → Run scripts/p2d-safe-rename-preview first.
+  → Apply scoped replacements only after reviewing the match set.
+  → Verify with type checker.
   → Skip Phase 2 if private symbol. Run Phase 2 if public.
 
 Signature change (add/remove params, change return type)
@@ -193,11 +219,24 @@ See `rules/strategies.md` for the full catalog:
 - **Safe rename:** semantic search → refactor preview → blast radius → apply
 - **Interface change risk:** impact radius → bridge detection → test gap analysis
 - **Architecture-aware refactor:** community detection → hub/bridge analysis → targeted edit
+- **Deletion test:** simulate removing a module → report runtime breaks, type-only imports, test failures
+
+## State Ownership
+
+Before creating new state (provider, context, store), check if equivalent
+state already exists. See `rules/state-mapper.md` for patterns.
+
+Supports: NestJS `@Injectable()`, React `createContext/useContext`,
+Valtio `proxy()`, Zustand `create()`, Jotai `atom()`.
+
+Includes split-brain detection: warns when two state stores manage
+overlapping data.
 
 ## Benchmarks
 
-When the user asks to measure token savings, run real benchmarks against their
-actual codebase. See `rules/benchmark.md` for the full procedure.
+When the user asks to measure token savings, run recall-aware benchmarks against
+their actual codebase. See `rules/benchmark.md` for the full procedure.
 
-Quick summary: pick 3 symbols at different scales, measure standard (grep + read
-all files) vs P2D (targeted categorized grep, no file reads), present a table.
+Quick summary: compare standard file-reading cost to P2D categorized output,
+then report token savings together with recall, precision, false negatives, and
+false positives. Never report savings alone.
