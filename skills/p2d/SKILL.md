@@ -8,11 +8,12 @@ description: >-
   surgical edits, or work with large codebases where grep/read is inefficient.
   Triggers on: "find all usages of", "refactor", "what depends on", "blast
   radius", "rename across codebase", "find the class/function", "impact of
-  this change", "architecture", "code smell", "safe to change".
+  this change", "architecture", "code smell", "safe to change",
+  "run benchmarks", "show token savings", "benchmark P2D".
 license: MIT
 metadata:
   author: p2d
-  version: "1.0.1"
+  version: "1.1.0"
 ---
 
 # P2D: Orchestrated Determinism
@@ -189,3 +190,11 @@ See `rules/strategies.md` for the full catalog:
 - **Safe rename:** semantic search → refactor preview → blast radius → apply
 - **Interface change risk:** impact radius → bridge detection → test gap analysis
 - **Architecture-aware refactor:** community detection → hub/bridge analysis → targeted edit
+
+## Benchmarks
+
+When the user asks to measure token savings, run real benchmarks against their
+actual codebase. See `rules/benchmark.md` for the full procedure.
+
+Quick summary: pick 3 symbols at different scales, measure standard (grep + read
+all files) vs P2D (targeted categorized grep, no file reads), present a table.
