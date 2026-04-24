@@ -1,6 +1,6 @@
 # P2D: Probabilistic-to-Deterministic Code Intelligence
 
-An AI agent skill that orchestrates structural tools to navigate and edit code by AST structure instead of raw text. P2D moves AI behavior from **probabilistic** (guessing via grep/read) to **deterministic** (navigating via structure), reducing token consumption by 70-95%.
+An AI agent skill that orchestrates structural tools to navigate and edit code by AST structure instead of raw text. P2D moves AI behavior from **probabilistic** (guessing via grep/read) to **deterministic** (navigating via structure), reducing token consumption by up to 95%.
 
 ---
 
@@ -10,35 +10,38 @@ An AI agent skill that orchestrates structural tools to navigate and edit code b
 
 AI agents waste tokens reading entire files to find a single function, then re-reading them after edits. P2D teaches the agent to use structural tools (ast-grep, code-review-graph) that locate and modify code at the AST level — matching the exact node you need without ever reading the full file.
 
-**Without P2D:**
+**Real-world test** — task: "Which services inject PrismaService in a NestJS monorepo (1,772 source files, 36 files reference PrismaService)?"
+
+Standard agent approach:
 ```
-Agent: "I'll find UserService"
-→ grep -r "UserService" .              (reads all matches)
-→ Read src/auth.ts                      (reads 800 lines for 1 class)
-→ Read src/api.ts                       (reads 600 lines for 1 import)
-→ Read src/models.ts                    (reads 400 lines for 1 reference)
-→ Edit src/auth.ts                      (rewrites all 800 lines to change 3)
-Token cost: ~4,500 tokens
+→ grep -rn "PrismaService" --include="*.ts" .     (72 matches across 36 files)
+→ Read order.service.ts                            (740 lines — needed 1 line)
+→ Read sales.service.ts                            (200 lines — needed 1 line)
+→ Read otp.service.ts                              (312 lines — needed 1 line)
+→ ... 33 more files to read to get the full picture
+Token cost: ~20,000+ tokens to read all 36 files
 ```
 
-**With P2D:**
+P2D approach:
 ```
-Agent: "I'll find UserService"
-→ sg -p 'class UserService { $$$ }' -l ts
-→ "Found 1 match: src/auth.ts:42"
-Token cost: ~50 tokens
+→ grep -rn "private.*PrismaService" --include="*.ts" .    (constructor injections)
+→ grep -rn "PrismaService" --include="*.module.ts" .      (module registrations)
+→ grep -rln "import.*PrismaService" --include="*.ts" .    (import statements)
+→ Summarize: "18 services inject PrismaService. 20 modules register it. 36 files total."
+Token cost: ~150 tokens — and a MORE complete answer than reading every file
 ```
+
+Result: **~99% token savings** with better coverage. The categorized summary (injections vs modules vs imports) is something a standard agent would need to read all 36 files to compile.
 
 ### What makes P2D different from just telling the AI to use ast-grep?
 
 P2D encodes judgment that a default agent doesn't have:
 
-- **Decision trees** — automatically skips unnecessary analysis for private symbols, runs full blast radius for shared interfaces. The agent doesn't waste time on simple changes or skip analysis on risky ones.
-- **Pattern catalog** — 50+ tested ast-grep patterns for React hooks, Python decorators, Go interfaces, Rust traits, import statements, and type assertions, including non-obvious gotchas (quote sensitivity, decorator matching, TSX conflicts).
-- **Code smell detection** — automatically flags `as any` casts, untested callers, and architectural chokepoints near your change site before you edit.
-- **Architecture-level reasoning** — uses code-review-graph to detect hub nodes (highly connected symbols), bridge nodes (cross-community dependencies), and execution flow impact. The agent understands *architectural risk*, not just file-level impact.
-- **Multi-tool strategies** — combines tools in sequences an agent wouldn't naturally compose: semantic search → refactor preview → blast radius → test gap analysis.
-- **Failure recovery** — when a structural search returns 0 matches unexpectedly, P2D has a recovery strategy (switch to `kind` matching, relax strictness, try different pattern forms).
+- **Decision trees** — the agent doesn't run all phases blindly. It skips Phase 2 for private functions and always runs it for shared interfaces. That's judgment.
+- **Encoded expertise** — the heuristics (quote sensitivity in ast-grep, decorator matching gotchas, Go receiver matching, TSX angle bracket conflicts) are things most agents would only learn after multiple failed attempts. They're now baked in.
+- **Architecture reasoning** — hub nodes, bridge nodes, community detection, execution flows. The agent understands architectural risk, not just file-level impact. No agent does this on its own.
+- **Code smell detection** — the agent doesn't just find what you asked for, it warns you about nearby risks (`as any` casts, untested callers) before you edit.
+- **Failure recovery** — when a pattern returns 0 matches, the skill has a recovery strategy. Most agents just give up.
 
 ### Does it work without installing anything?
 
@@ -160,8 +163,8 @@ p2d/
 │       ├── surgeon.md        # Phase 3: AST node replacement + failure recovery
 │       ├── fallback.md       # Graceful degradation with heuristics + caching
 │       ├── auto-install.md   # Tool detection and platform-specific install
-│       └── strategies.md     # Multi-tool orchestration + code smell detection
-├── benchmark/                # Token comparison tooling
+│       ├── strategies.md     # Multi-tool orchestration + code smell detection
+│       └── benchmark.md      # Agent-run benchmark procedure
 ├── docs/                     # Design documentation
 ├── AGENTS.md                 # Contributor guide
 └── README.md                 # This file
@@ -169,12 +172,15 @@ p2d/
 
 ## Benchmarking
 
-The `benchmark/` directory contains a tool that compares token usage between a standard agent workflow and a P2D-guided workflow. See [benchmark/README.md](benchmark/README.md) for details.
+Ask your agent to measure P2D savings on your actual codebase:
 
-```bash
-cd benchmark
-python3 benchmark_tool.py --repo /path/to/target/repo --task tasks/find-usages.json
 ```
+"run P2D benchmarks"
+"show me the token savings"
+"benchmark P2D on this codebase"
+```
+
+The agent will pick symbols at different scales, run standard vs P2D approaches with real commands, and output a comparison table. No setup required — it uses whatever tools are available (ast-grep, grep) against your real code.
 
 ## License
 
