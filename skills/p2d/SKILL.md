@@ -10,12 +10,13 @@ description: >-
   radius", "rename across codebase", "find the class/function", "impact of
   this change", "architecture", "code smell", "safe to change",
   "run benchmarks", "show token savings", "benchmark P2D",
+  "P2D doctor", "doctor mode", "prerequisites check", "what mode will P2D use",
   "where does state live", "state ownership", "who owns this data",
   "can I delete this module", "what breaks if I remove".
 license: MIT
 metadata:
   author: p2d
-  version: '1.3.0'
+  version: '1.3.1'
 ---
 
 # P2D: Orchestrated Determinism
@@ -129,6 +130,26 @@ Prefer the bundled scripts for repeatable operations:
 - `scripts/p2d-benchmark-summary`: render a Markdown table from saved results
 
 Use `references/evaluation.md` for release-quality metrics.
+
+## Doctor / Mode Check
+
+When the user asks for "P2D doctor", "doctor mode", a prerequisites check, or
+"what mode will P2D use", run the helper script if available:
+
+```bash
+skills/p2d/scripts/p2d-doctor --root .
+```
+
+If the installed skill path is different, locate the skill folder first or run
+the equivalent checks from `rules/auto-install.md`. Report the resulting mode:
+
+- full mode: ast-grep + code-review-graph + codemod available
+- structural mode: ast-grep available, graph unavailable
+- graph mode: code-review-graph available, ast-grep unavailable
+- fallback mode: targeted grep/git grep and line-range reads only
+
+Do not say "doctor" is unsupported; it is P2D's shorthand for the prerequisites
+and operating-mode check.
 
 ## Decision Trees
 
