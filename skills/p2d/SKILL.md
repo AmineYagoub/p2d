@@ -15,7 +15,7 @@ description: >-
 license: MIT
 metadata:
   author: p2d
-  version: '1.2.0'
+  version: '1.3.0'
 ---
 
 # P2D: Orchestrated Determinism
@@ -122,11 +122,10 @@ Prefer the bundled scripts for repeatable operations:
 - `scripts/p2d-deletion-sim`: static/dynamic deletion risk scan
 - `scripts/p2d-state-map`: domain-driven state ownership map
 - `scripts/p2d-benchmark`: token savings with recall and precision
-- `scripts/p2d-fixture-check`: bundled smoke tests for release checks
 - `scripts/p2d-fetch-benchmark-repo`: clone pinned external benchmark repos
   into `.p2d-bench/` and run configured targets
 - `scripts/p2d-run-all-benchmarks`: run fixtures and all external profiles,
-  saving JSON under `benchmark/results/`
+  saving JSON under `benchmark/results/`; skips dev-only fixtures when absent
 - `scripts/p2d-benchmark-summary`: render a Markdown table from saved results
 
 Use `references/evaluation.md` for release-quality metrics.
