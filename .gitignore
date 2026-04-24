@@ -1,5 +1,6 @@
 # Benchmark results (generated)
 benchmark/results/*.json
+.p2d-bench/
 
 # OS files
 .DS_Store
@@ -9,6 +10,8 @@ Thumbs.db
 *.swp
 *.swo
 *~
+__pycache__/
+*.pyc
 .idea/
 .vscode/
 .claude/
