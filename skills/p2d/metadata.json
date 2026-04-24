@@ -1,8 +1,8 @@
 {
-  "version": "1.2.0",
+  "version": "1.3.0",
   "organization": "P2D",
   "date": "April 2026",
-  "abstract": "An AI agent skill that orchestrates ast-grep, code-review-graph (MCP), Codemod, and bundled fallback scripts to move code intelligence from probabilistic (text-based grep/read) to deterministic, measurable navigation and editing. Contains 8 rule categories: structural discovery, dependency tracing, surgical execution, graceful fallback, auto-install, multi-tool strategies, state ownership mapping, and recall-aware benchmarking. Includes a runnable harness, fixtures, and evaluation criteria so token savings are reported with recall, precision, false negatives, and false positives.",
+  "abstract": "P2D helps AI coding agents stop guessing, map the system before they edit, and save tokens, time, and money. It moves agents from vibe coding to system-aware engineering with structural discovery, blast-radius analysis, surgical edit previews, deletion simulation, state ownership mapping, and recall-aware benchmarking. Includes lightweight runtime scripts, pinned external benchmark profiles, dev-only eval prompts, trigger evals, and blind A/B comparison guidance so savings are reported with recall, precision, false negatives, and false positives.",
   "references": [
     "https://ast-grep.github.io",
     "https://github.com/tirth8205/code-review-graph",
