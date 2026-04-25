@@ -1,6 +1,6 @@
 # P2D
 
-Version: `v1.5.0` | Repository: [AmineYagoub/p2d](https://github.com/AmineYagoub/p2d)
+Version: `v1.5.1` | Repository: [AmineYagoub/p2d](https://github.com/AmineYagoub/p2d)
 
 **P2D helps AI coding agents stop guessing, map the system before they edit,
 and save tokens, time, and money.**
@@ -83,16 +83,28 @@ tools are unavailable.
 
 ## Install
 
-Install from GitHub:
+General install:
 
 ```bash
 npx skills add AmineYagoub/p2d
 ```
 
+Install for Codex:
+
+```bash
+npx skills add AmineYagoub/p2d -g -a codex -y
+```
+
+Install for Claude Code:
+
+```bash
+npx skills add AmineYagoub/p2d -g -a claude-code -y
+```
+
 Or from a local clone:
 
 ```bash
-npx skills add ./p2d
+npx skills add ./p2d -g -a codex -y
 ```
 
 Then ask your agent to use it. You do not need to manually run scripts for most
