@@ -68,6 +68,42 @@ class BenchmarkTests(unittest.TestCase):
             self.assertEqual(report["false_positive_files"], ["src/extra.ts"])
             self.assertIn("precision", report["failed_thresholds"][0])
 
+    def test_accuracy_is_not_measured_without_expected_file(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "src").mkdir()
+            (root / "src/user.ts").write_text("export class UserService {}\n", encoding="utf-8")
+
+            result = subprocess.run(
+                [sys.executable, str(SCRIPT), "UserService", "--root", str(root), "--json"],
+                text=True,
+                capture_output=True,
+                check=True,
+            )
+            report = json.loads(result.stdout)
+
+            self.assertFalse(report["accuracy_measured"])
+            self.assertIsNone(report["recall_percent"])
+            self.assertIsNone(report["precision_percent"])
+            self.assertIn("no --expected", report["measurement_note"])
+
+    def test_recall_threshold_fails_without_expected_file(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "src").mkdir()
+            (root / "src/user.ts").write_text("export class UserService {}\n", encoding="utf-8")
+
+            result = subprocess.run(
+                [sys.executable, str(SCRIPT), "UserService", "--root", str(root), "--json", "--fail-under-recall", "100"],
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            report = json.loads(result.stdout)
+
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("no --expected", report["failed_thresholds"][0])
+
 
 if __name__ == "__main__":
     unittest.main()

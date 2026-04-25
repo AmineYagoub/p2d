@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -57,6 +58,36 @@ class FindSymbolTests(unittest.TestCase):
             found = {ref["file"] for ref in report["references"]}
 
             self.assertEqual(found, {"src/live.ts"})
+
+    def test_filters_directories_and_extensions_case_insensitively(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "src").mkdir()
+            (root / "Node_Modules").mkdir()
+            (root / "DIST").mkdir()
+            (root / "src/live.PY").write_text("class UserService:\n    pass\n", encoding="utf-8")
+            (root / "Node_Modules/ignored.py").write_text("class UserService:\n    pass\n", encoding="utf-8")
+            (root / "DIST/ignored.py").write_text("class UserService:\n    pass\n", encoding="utf-8")
+
+            report = self.run_find(root, "UserService")
+            found = {ref["file"] for ref in report["references"]}
+
+            self.assertEqual(found, {"src/live.PY"})
+
+    @unittest.skipIf(os.geteuid() == 0, "root can read permission-restricted files")
+    def test_unreadable_file_does_not_crash(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "src").mkdir()
+            unreadable = root / "src/blocked.py"
+            unreadable.write_text("class UserService:\n    pass\n", encoding="utf-8")
+            unreadable.chmod(0)
+            try:
+                report = self.run_find(root, "UserService")
+            finally:
+                unreadable.chmod(0o644)
+
+            self.assertEqual(report["total"], 0)
 
 
 if __name__ == "__main__":

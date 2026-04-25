@@ -27,7 +27,7 @@ class StateMapTests(unittest.TestCase):
             root = Path(tmp)
             files = {
                 "src/session.tsx": 'export const AuthContext = createContext({ userId: null, token: null });\n',
-                "src/profile-data.ts": 'export const useAccountStore = create(() => ({ userId: null, displayName: null }));\n',
+                "src/profile-data.ts": 'import { create } from "zustand";\nexport const useAccountStore = create(() => ({ userId: null, displayName: null }));\n',
                 "src/billing.ts": 'export const useBillingStore = create(() => ({ invoiceId: null }));\n',
             }
             for name, text in files.items():
@@ -61,6 +61,24 @@ class StateMapTests(unittest.TestCase):
 
             self.assertEqual({owner["file"] for owner in report["owners"]}, {"src/auth.ts"})
             self.assertEqual(report["unknown_terms"], ["cart"])
+
+    def test_zustand_requires_zustand_import(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            files = {
+                "src/actual.ts": 'import { create } from "zustand";\nexport const useUserStore = create(() => ({ userId: null }));\n',
+                "src/noise.ts": 'import { create } from "other-lib";\nexport const userThing = create(() => ({ userId: null }));\n',
+            }
+            for name, text in files.items():
+                path = root / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(text, encoding="utf-8")
+
+            report = self.run_state(root, "user")
+            owners = {owner["file"]: owner["kinds"] for owner in report["owners"]}
+
+            self.assertIn("zustand", owners["src/actual.ts"])
+            self.assertNotIn("src/noise.ts", owners)
 
 
 if __name__ == "__main__":

@@ -41,6 +41,7 @@ SOURCE_EXTENSIONS = {
     ".yml",
     ".toml",
 }
+SOURCE_EXTENSIONS_LOWER = {extension.lower() for extension in SOURCE_EXTENSIONS}
 
 IGNORED_DIRS = {
     ".git",
@@ -61,6 +62,7 @@ IGNORED_DIRS = {
     ".pytest_cache",
     ".mypy_cache",
 }
+IGNORED_DIRS_LOWER = {directory.lower() for directory in IGNORED_DIRS}
 
 
 @dataclass(frozen=True)
@@ -100,10 +102,10 @@ def command_version(command: list[str]) -> dict:
 
 def iter_source_files(root: Path) -> Iterable[Path]:
     for current, dirs, files in os.walk(root):
-        dirs[:] = [d for d in dirs if d not in IGNORED_DIRS]
+        dirs[:] = [d for d in dirs if d.lower() not in IGNORED_DIRS_LOWER]
         for filename in files:
             path = Path(current) / filename
-            if path.suffix in SOURCE_EXTENSIONS:
+            if path.suffix.lower() in SOURCE_EXTENSIONS_LOWER:
                 yield path
 
 
@@ -111,7 +113,12 @@ def safe_read(path: Path) -> str:
     try:
         return path.read_text(encoding="utf-8")
     except UnicodeDecodeError:
-        return path.read_text(encoding="utf-8", errors="replace")
+        try:
+            return path.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            return ""
+    except (PermissionError, FileNotFoundError, OSError):
+        return ""
 
 
 def rel(path: Path, root: Path) -> str:

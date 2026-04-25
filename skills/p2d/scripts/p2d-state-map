@@ -14,7 +14,6 @@ STATE_PATTERNS = {
     "nestjs-injectable": re.compile(r"@Injectable|class\s+\w+Service\b"),
     "nestjs-module-provider": re.compile(r"@Module|providers\s*:|exports\s*:"),
     "react-context": re.compile(r"createContext|useContext|\.Provider\b"),
-    "zustand": re.compile(r"\bcreate\s*(<[^>]+>)?\s*\("),
     "valtio": re.compile(r"\bproxy\s*\("),
     "jotai": re.compile(r"\batom\s*\("),
     "pinia": re.compile(r"\bdefineStore\s*\("),
@@ -22,6 +21,8 @@ STATE_PATTERNS = {
     "fastapi-state": re.compile(r"Depends\s*\(|app\.state"),
     "repository-service": re.compile(r"\b(class|interface)\s+\w*(Repository|Service)\b"),
 }
+ZUSTAND_IMPORT = re.compile(r"""from\s+["']zustand["']|require\s*\(\s*["']zustand["']\s*\)""")
+ZUSTAND_CREATE = re.compile(r"\bcreate\s*(?:<[^>]+>)?\s*\(\s*(?:\([^)]*\)|[A-Za-z_$][\w$]*)?\s*=>")
 
 
 def exported_names(text: str) -> list[str]:
@@ -33,6 +34,13 @@ def exported_names(text: str) -> list[str]:
 def field_names(text: str) -> list[str]:
     fields = re.findall(r"\b([A-Za-z_][A-Za-z0-9_]*)\??\s*:", text)
     return sorted({field for field in fields if field not in {"providers", "exports", "imports"}})
+
+
+def state_kinds(text: str) -> list[str]:
+    kinds = [name for name, pattern in STATE_PATTERNS.items() if pattern.search(text)]
+    if ZUSTAND_IMPORT.search(text) and ZUSTAND_CREATE.search(text):
+        kinds.append("zustand")
+    return sorted(kinds)
 
 
 def main() -> int:
@@ -54,7 +62,7 @@ def main() -> int:
         matched_terms = sorted({term for term in terms if re.search(re.escape(term), text, re.IGNORECASE)})
         if not matched_terms:
             continue
-        matched_kinds = [name for name, pattern in STATE_PATTERNS.items() if pattern.search(text)]
+        matched_kinds = state_kinds(text)
         if matched_kinds:
             fields = field_names(text)
             overlapping_fields = sorted(

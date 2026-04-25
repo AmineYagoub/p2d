@@ -40,7 +40,8 @@ def main() -> int:
     refs = find_symbol(root, args.symbol)
     found_files = {ref.file for ref in refs}
     expected_files = load_expected(Path(args.expected).resolve() if args.expected else None)
-    ground_truth = expected_files or found_files
+    accuracy_measured = expected_files is not None
+    ground_truth = expected_files if accuracy_measured else found_files
 
     p2d_payload = refs_as_dicts(refs)
     standard_grep_chars = sum(len(f"{ref.file}:{ref.line}:{ref.text}\n") for ref in refs)
@@ -48,11 +49,19 @@ def main() -> int:
     standard_tokens = max(1, (standard_grep_chars + standard_file_chars) // 4)
     p2d_tokens = max(1, len(json.dumps(p2d_payload)) // 4)
 
-    true_positive_files = found_files & ground_truth
-    false_negative_files = ground_truth - found_files
-    false_positive_files = found_files - ground_truth
-    recall = 1.0 if not ground_truth else len(true_positive_files) / len(ground_truth)
-    precision = 1.0 if not found_files else len(true_positive_files) / len(found_files)
+    if accuracy_measured:
+        true_positive_files = found_files & ground_truth
+        false_negative_files = ground_truth - found_files
+        false_positive_files = found_files - ground_truth
+        recall = 1.0 if not ground_truth else len(true_positive_files) / len(ground_truth)
+        precision = 1.0 if not found_files else len(true_positive_files) / len(found_files)
+        recall_percent = round(recall * 100, 2)
+        precision_percent = round(precision * 100, 2)
+    else:
+        false_negative_files = set()
+        false_positive_files = set()
+        recall_percent = None
+        precision_percent = None
     savings = 1.0 - (p2d_tokens / standard_tokens)
 
     report = {
@@ -61,9 +70,11 @@ def main() -> int:
         "standard_tokens": standard_tokens,
         "p2d_tokens": p2d_tokens,
         "savings_percent": round(savings * 100, 2),
-        "recall_percent": round(recall * 100, 2),
-        "precision_percent": round(precision * 100, 2),
-        "expected_files": sorted(ground_truth),
+        "recall_percent": recall_percent,
+        "precision_percent": precision_percent,
+        "accuracy_measured": accuracy_measured,
+        "measurement_note": None if accuracy_measured else "recall/precision not measured because no --expected file was provided",
+        "expected_files": sorted(ground_truth) if accuracy_measured else None,
         "found_files": sorted(found_files),
         "false_negative_files": sorted(false_negative_files),
         "false_positive_files": sorted(false_positive_files),
@@ -74,9 +85,13 @@ def main() -> int:
         fail_under_recall = 100.0
     fail_under_precision = args.fail_under_precision
     failed_thresholds = []
-    if fail_under_recall is not None and report["recall_percent"] < fail_under_recall:
+    if fail_under_recall is not None and not accuracy_measured:
+        failed_thresholds.append("recall threshold requested but no --expected file was provided")
+    if fail_under_precision is not None and not accuracy_measured:
+        failed_thresholds.append("precision threshold requested but no --expected file was provided")
+    if fail_under_recall is not None and accuracy_measured and report["recall_percent"] < fail_under_recall:
         failed_thresholds.append(f"recall {report['recall_percent']} < {fail_under_recall}")
-    if fail_under_precision is not None and report["precision_percent"] < fail_under_precision:
+    if fail_under_precision is not None and accuracy_measured and report["precision_percent"] < fail_under_precision:
         failed_thresholds.append(f"precision {report['precision_percent']} < {fail_under_precision}")
     report["failed_thresholds"] = failed_thresholds
 
@@ -88,8 +103,12 @@ def main() -> int:
     print(f"- standard tokens: {standard_tokens}")
     print(f"- p2d tokens: {p2d_tokens}")
     print(f"- savings: {report['savings_percent']}%")
-    print(f"- recall: {report['recall_percent']}%")
-    print(f"- precision: {report['precision_percent']}%")
+    if accuracy_measured:
+        print(f"- recall: {report['recall_percent']}%")
+        print(f"- precision: {report['precision_percent']}%")
+    else:
+        print("- recall: not measured (no --expected file)")
+        print("- precision: not measured (no --expected file)")
     if false_negative_files:
         print("- false negatives:")
         for file in sorted(false_negative_files):
