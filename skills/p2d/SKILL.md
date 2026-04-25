@@ -27,7 +27,7 @@ description: >-
 license: MIT
 metadata:
   author: p2d
-  version: '1.4.0'
+  version: '1.5.0'
 ---
 
 # P2D: Orchestrated Determinism
@@ -99,6 +99,8 @@ Read the detailed instructions: `rules/surgeon.md`
 - **Prerequisites Check:** On first activation, check for ast-grep,
   code-review-graph, and Codemod. Report availability and offer to install
   missing tools. See: `rules/auto-install.md`
+- **Cost Discipline:** After P2D activates, keep planning, editing, testing,
+  recovery, and reporting proportional. See: `rules/cost-discipline.md`
 
 ## Heuristics
 
