@@ -1,6 +1,6 @@
 # P2D
 
-Version: `v1.5.1` | Repository: [AmineYagoub/p2d](https://github.com/AmineYagoub/p2d)
+Version: `v1.5.2` | Repository: [AmineYagoub/p2d](https://github.com/AmineYagoub/p2d)
 
 **P2D helps AI coding agents stop guessing, map the system before they edit,
 and save tokens, time, and money.**
