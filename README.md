@@ -1,6 +1,6 @@
 # P2D
 
-Version: `v1.5.2` | Repository: [AmineYagoub/p2d](https://github.com/AmineYagoub/p2d)
+Version: `v1.5.3` | Repository: [AmineYagoub/p2d](https://github.com/AmineYagoub/p2d)
 
 **P2D helps AI coding agents stop guessing, map the system before they edit,
 and save tokens, time, and money.**
@@ -109,6 +109,16 @@ npx skills add ./p2d -g -a codex -y
 
 Then ask your agent to use it. You do not need to manually run scripts for most
 workflows.
+
+Optional full graph mode requires Python 3.10+ and code-review-graph:
+
+```bash
+pip install code-review-graph
+code-review-graph install --platform codex
+code-review-graph build
+```
+
+For Claude Code, use `code-review-graph install --platform claude-code`.
 
 ## How To Ask Your Agent
 
