@@ -18,7 +18,7 @@ The section ID (in parentheses) is the filename used for each rule.
 ## 3. Surgical Execution (surgeon)
 
 **Impact:** HIGH
-**Description:** For targeted changes (less than 20% of a file), perform AST node swaps using ast-grep replacement, Codemod, or native Edit tool instead of full-file rewrites. Includes real replacement patterns, verification steps, and failure recovery procedures.
+**Description:** For targeted changes (less than 20% of a file), perform previewed AST node swaps using ast-grep replacement, Codemod, or native Edit tool instead of full-file rewrites. Includes pattern sketches, match-set review, verification steps, and failure recovery procedures.
 
 ## 4. Graceful Fallback (fallback)
 
@@ -44,3 +44,8 @@ The section ID (in parentheses) is the filename used for each rule.
 
 **Impact:** MEDIUM
 **Description:** When the user asks to measure P2D savings, the agent runs recall-aware benchmarks against fixtures or the actual codebase. Measures standard vs P2D token consumption, recall, precision, false negatives, and false positives. Token savings are never reported without accuracy.
+
+## 9. Whole-Agent Cost Discipline (cost-discipline)
+
+**Impact:** MEDIUM
+**Description:** After P2D activates, keeps reasoning, planning, editing, testing, recovery, and reporting proportional to the task. Complements the three-phase workflow without broadening P2D's trigger surface.
