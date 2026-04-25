@@ -6,17 +6,28 @@ description: >-
   structure instead of text. Use this skill when the user asks to find symbols,
   refactor code, trace dependencies, map blast radius of changes, perform
   surgical edits, or work with large codebases where grep/read is inefficient.
-  Triggers on: "find all usages of", "refactor", "what depends on", "blast
-  radius", "rename across codebase", "find the class/function", "impact of
-  this change", "architecture", "code smell", "safe to change",
-  "run benchmarks", "show token savings", "benchmark P2D",
-  "P2D doctor", "doctor mode", "prerequisites check", "what mode will P2D use",
-  "where does state live", "state ownership", "who owns this data",
+  Also use it for casual safety/navigation requests such as fixing something
+  without breaking the app, updating all related files, finding where code is
+  used or defined, checking whether code is still used, finding the files to
+  edit, removing code safely, or understanding code before changing it.
+  Triggers on: "find all usages of", "where is this used", "where is this
+  defined", "find all callers", "find the files I need to edit", "which files
+  matter", "I don't know where this lives", "refactor", "what depends on",
+  "what parts of the app depend on", "blast radius", "rename across codebase",
+  "preview renaming", "show every importer", "impact of this change",
+  "changing this function signature", "untested callers", "safe to change",
+  "fix this without breaking anything", "don't mess up the rest of the app",
+  "update all related files", "make this change everywhere", "clean this up
+  safely", "is this still used", "remove this safely", "will imports break",
+  "why did changing this break other parts of the app", "why did changing this
+  break other stuff", "run benchmarks", "show token savings", "benchmark
+  P2D", "P2D doctor", "doctor mode", "prerequisites check", "what mode will
+  P2D use", "where does state live", "state ownership", "who owns this data",
   "can I delete this module", "what breaks if I remove".
 license: MIT
 metadata:
   author: p2d
-  version: '1.3.1'
+  version: '1.4.0'
 ---
 
 # P2D: Orchestrated Determinism
@@ -33,6 +44,9 @@ Use this protocol when the user:
 - Requests dependency or impact analysis before making changes
 - Wants to understand the "blast radius" of a proposed edit
 - Works in a large codebase where reading files one-by-one is wasteful
+- Uses casual safety/navigation phrasing like "fix this without breaking
+  anything", "update all related files", "is this still used", or "I don't know
+  where this lives"
 
 ## The Three Phases
 

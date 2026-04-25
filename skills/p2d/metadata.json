@@ -1,5 +1,5 @@
 {
-  "version": "1.3.1",
+  "version": "1.4.0",
   "organization": "P2D",
   "date": "April 2026",
   "abstract": "P2D helps AI coding agents stop guessing, map the system before they edit, and save tokens, time, and money. It moves agents from vibe coding to system-aware engineering with structural discovery, blast-radius analysis, surgical edit previews, deletion simulation, state ownership mapping, and recall-aware benchmarking. Includes lightweight runtime scripts, pinned external benchmark profiles, dev-only eval prompts, trigger evals, and blind A/B comparison guidance so savings are reported with recall, precision, false negatives, and false positives.",
