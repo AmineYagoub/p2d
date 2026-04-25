@@ -1,14 +1,19 @@
 {
-  "version": 1,
+  "version": 2,
   "repos": [
     {
       "id": "nestjs-typescript-starter",
-      "description": "Small real NestJS application used as an external smoke benchmark.",
+      "description": "Small real NestJS application used as an external backend TypeScript benchmark.",
       "url": "https://github.com/nestjs/typescript-starter.git",
       "commit": "c4d9330f5513eda0fb5df594f6b34a11fde1a934",
+      "language": "typescript",
+      "type": "nestjs-backend",
       "targets": [
         {
           "symbol": "AppService",
+          "task_type": "service-discovery",
+          "language": "typescript",
+          "notes": "Nest service definition, controller injection, module provider, and unit test.",
           "expected_files": [
             "src/app.controller.spec.ts",
             "src/app.controller.ts",
@@ -18,23 +23,53 @@
         },
         {
           "symbol": "AppController",
+          "task_type": "controller-discovery",
+          "language": "typescript",
+          "notes": "Nest controller definition, module registration, unit test, and e2e bootstrap.",
           "expected_files": [
             "src/app.controller.spec.ts",
             "src/app.controller.ts",
             "src/app.module.ts",
             "test/app.e2e-spec.ts"
           ]
+        },
+        {
+          "symbol": "AppModule",
+          "task_type": "module-discovery",
+          "language": "typescript",
+          "notes": "Nest module registration and test bootstrap.",
+          "expected_files": [
+            "src/app.module.ts",
+            "src/main.ts",
+            "test/app.e2e-spec.ts"
+          ]
+        },
+        {
+          "symbol": "getHello",
+          "task_type": "method-discovery",
+          "language": "typescript",
+          "notes": "Method implementation, controller call, and unit test reference.",
+          "expected_files": [
+            "src/app.controller.spec.ts",
+            "src/app.controller.ts",
+            "src/app.service.ts"
+          ]
         }
       ]
     },
     {
       "id": "react-redux-realworld",
-      "description": "Pinned React/Redux RealWorld app for larger external benchmark exploration.",
+      "description": "Pinned React/Redux RealWorld app for frontend benchmark exploration.",
       "url": "https://github.com/gothinkster/react-redux-realworld-example-app.git",
       "commit": "ee72eba4056392c95a27bc48d385d3f54ba38a18",
+      "language": "javascript",
+      "type": "react-redux-frontend",
       "targets": [
         {
           "symbol": "ArticleList",
+          "task_type": "component-discovery",
+          "language": "javascript",
+          "notes": "React component imported by home and profile views.",
           "expected_files": [
             "src/components/ArticleList.js",
             "src/components/Home/MainView.js",
@@ -43,6 +78,9 @@
         },
         {
           "symbol": "Header",
+          "task_type": "component-discovery",
+          "language": "javascript",
+          "notes": "Application shell component and route wiring.",
           "expected_files": [
             "src/components/App.js",
             "src/components/Header.js"
@@ -50,10 +88,273 @@
         },
         {
           "symbol": "articleList",
+          "task_type": "state-discovery",
+          "language": "javascript",
+          "notes": "Redux state key used across reducer and component views.",
           "expected_files": [
             "src/components/Home/MainView.js",
             "src/components/Profile.js",
             "src/reducer.js"
+          ]
+        },
+        {
+          "symbol": "Profile",
+          "task_type": "component-discovery",
+          "language": "javascript",
+          "notes": "Component route wiring plus API namespace collision.",
+          "expected_files": [
+            "src/agent.js",
+            "src/components/App.js",
+            "src/components/Profile.js",
+            "src/components/ProfileFavorites.js"
+          ]
+        },
+        {
+          "symbol": "Login",
+          "task_type": "component-discovery",
+          "language": "javascript",
+          "notes": "Route-bound component reference.",
+          "expected_files": [
+            "src/components/App.js",
+            "src/components/Login.js"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "full-stack-fastapi-template",
+      "description": "FastAPI plus React generated client benchmark for cross-language schema and dependency discovery.",
+      "url": "https://github.com/fastapi/full-stack-fastapi-template.git",
+      "commit": "13652b51ea0acca7dfe243ac25e2bbdc066f3c4f",
+      "language": "python-typescript",
+      "type": "fullstack-template",
+      "targets": [
+        {
+          "symbol": "UserCreate",
+          "task_type": "schema-model-discovery",
+          "language": "python-typescript",
+          "notes": "Generated frontend client plus backend schema, CRUD, seed, route, and tests.",
+          "expected_files": [
+            "backend/app/api/routes/users.py",
+            "backend/app/core/db.py",
+            "backend/app/crud.py",
+            "backend/app/models.py",
+            "backend/tests/api/routes/test_login.py",
+            "backend/tests/api/routes/test_users.py",
+            "backend/tests/crud/test_user.py",
+            "backend/tests/utils/user.py",
+            "frontend/src/client/schemas.gen.ts",
+            "frontend/src/client/types.gen.ts",
+            "frontend/src/components/Admin/AddUser.tsx"
+          ]
+        },
+        {
+          "symbol": "CurrentUser",
+          "task_type": "dependency-type-alias-discovery",
+          "language": "python",
+          "notes": "FastAPI dependency alias used across route modules.",
+          "expected_files": [
+            "backend/app/api/deps.py",
+            "backend/app/api/routes/items.py",
+            "backend/app/api/routes/login.py",
+            "backend/app/api/routes/users.py"
+          ]
+        },
+        {
+          "symbol": "get_current_active_superuser",
+          "task_type": "dependency-discovery",
+          "language": "python",
+          "notes": "FastAPI Depends dependency used as route guard.",
+          "expected_files": [
+            "backend/app/api/deps.py",
+            "backend/app/api/routes/login.py",
+            "backend/app/api/routes/users.py",
+            "backend/app/api/routes/utils.py"
+          ]
+        },
+        {
+          "symbol": "ItemCreate",
+          "task_type": "schema-model-discovery",
+          "language": "python-typescript",
+          "notes": "Frontend form, generated client schema, backend schema, CRUD, route, and tests.",
+          "expected_files": [
+            "backend/app/api/routes/items.py",
+            "backend/app/crud.py",
+            "backend/app/models.py",
+            "backend/tests/utils/item.py",
+            "frontend/src/client/schemas.gen.ts",
+            "frontend/src/client/types.gen.ts",
+            "frontend/src/components/Items/AddItem.tsx"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "golang-gin-realworld",
+      "description": "Go/Gin RealWorld API benchmark for middleware, model, router, serializer, validator, and test references.",
+      "url": "https://github.com/gothinkster/golang-gin-realworld-example-app.git",
+      "commit": "626c372d259472148d93303f74aa9b9a1cdcef24",
+      "language": "go",
+      "type": "gin-backend",
+      "targets": [
+        {
+          "symbol": "AuthMiddleware",
+          "task_type": "middleware-discovery",
+          "language": "go",
+          "notes": "Gin middleware registration and tests.",
+          "expected_files": [
+            "articles/unit_test.go",
+            "hello.go",
+            "users/middlewares.go",
+            "users/unit_test.go"
+          ]
+        },
+        {
+          "symbol": "ArticleModel",
+          "task_type": "model-discovery",
+          "language": "go",
+          "notes": "Struct model used by routes, validators, serializers, and tests.",
+          "expected_files": [
+            "articles/models.go",
+            "articles/routers.go",
+            "articles/serializers.go",
+            "articles/unit_test.go",
+            "articles/validators.go",
+            "hello.go"
+          ]
+        },
+        {
+          "symbol": "UserModel",
+          "task_type": "model-discovery",
+          "language": "go",
+          "notes": "Cross-package model reference with many call sites.",
+          "expected_files": [
+            "articles/models.go",
+            "articles/routers.go",
+            "articles/serializers.go",
+            "articles/unit_test.go",
+            "articles/validators.go",
+            "users/middlewares.go",
+            "users/models.go",
+            "users/routers.go",
+            "users/serializers.go",
+            "users/unit_test.go",
+            "users/validators.go"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "mini-redis",
+      "description": "Tokio mini-redis benchmark for Rust module, re-export, lifecycle, and shared-state references.",
+      "url": "https://github.com/tokio-rs/mini-redis.git",
+      "commit": "3d93b42bc363220f85af4fc9e1bebd35b588a4a3",
+      "language": "rust",
+      "type": "tokio-service-library",
+      "targets": [
+        {
+          "symbol": "Connection",
+          "task_type": "module-type-discovery",
+          "language": "rust",
+          "notes": "Re-exported type used across server, client, and command modules.",
+          "expected_files": [
+            "src/clients/client.rs",
+            "src/cmd/get.rs",
+            "src/cmd/mod.rs",
+            "src/cmd/ping.rs",
+            "src/cmd/publish.rs",
+            "src/cmd/set.rs",
+            "src/cmd/subscribe.rs",
+            "src/cmd/unknown.rs",
+            "src/connection.rs",
+            "src/lib.rs",
+            "src/server.rs"
+          ]
+        },
+        {
+          "symbol": "Db",
+          "task_type": "state-ownership-discovery",
+          "language": "rust",
+          "notes": "Shared state handle, imports, implementation block, and command handlers.",
+          "expected_files": [
+            "src/cmd/get.rs",
+            "src/cmd/mod.rs",
+            "src/cmd/publish.rs",
+            "src/cmd/set.rs",
+            "src/cmd/subscribe.rs",
+            "src/db.rs",
+            "src/lib.rs",
+            "src/server.rs"
+          ]
+        },
+        {
+          "symbol": "Shutdown",
+          "task_type": "lifecycle-discovery",
+          "language": "rust",
+          "notes": "Graceful shutdown type plus deliberate comment/reference ambiguity.",
+          "expected_files": [
+            "src/cmd/mod.rs",
+            "src/cmd/subscribe.rs",
+            "src/lib.rs",
+            "src/server.rs",
+            "src/shutdown.rs",
+            "tests/server.rs"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "spring-petclinic",
+      "description": "Canonical Spring Boot application benchmark for controllers, repositories, dependency injection, and tests.",
+      "url": "https://github.com/spring-projects/spring-petclinic.git",
+      "commit": "c7ee170434ec3e369fdc9201290ba2ea4c92b557",
+      "language": "java",
+      "type": "spring-backend",
+      "targets": [
+        {
+          "symbol": "OwnerController",
+          "task_type": "controller-discovery",
+          "language": "java",
+          "notes": "Spring MVC controller and focused tests.",
+          "expected_files": [
+            "src/main/java/org/springframework/samples/petclinic/owner/OwnerController.java",
+            "src/test/java/org/springframework/samples/petclinic/owner/OwnerControllerTests.java"
+          ]
+        },
+        {
+          "symbol": "OwnerRepository",
+          "task_type": "repository-discovery",
+          "language": "java",
+          "notes": "Spring Data repository dependency across controllers and tests.",
+          "expected_files": [
+            "src/main/java/org/springframework/samples/petclinic/owner/OwnerController.java",
+            "src/main/java/org/springframework/samples/petclinic/owner/OwnerRepository.java",
+            "src/main/java/org/springframework/samples/petclinic/owner/PetController.java",
+            "src/main/java/org/springframework/samples/petclinic/owner/VisitController.java",
+            "src/test/java/org/springframework/samples/petclinic/owner/OwnerControllerTests.java",
+            "src/test/java/org/springframework/samples/petclinic/owner/PetControllerTests.java",
+            "src/test/java/org/springframework/samples/petclinic/owner/VisitControllerTests.java",
+            "src/test/java/org/springframework/samples/petclinic/service/ClinicServiceTests.java"
+          ]
+        },
+        {
+          "symbol": "PetController",
+          "task_type": "controller-discovery",
+          "language": "java",
+          "notes": "Spring MVC controller plus tests.",
+          "expected_files": [
+            "src/main/java/org/springframework/samples/petclinic/owner/PetController.java",
+            "src/test/java/org/springframework/samples/petclinic/owner/PetControllerTests.java"
+          ]
+        },
+        {
+          "symbol": "VetController",
+          "task_type": "controller-discovery",
+          "language": "java",
+          "notes": "Separate package controller plus tests.",
+          "expected_files": [
+            "src/main/java/org/springframework/samples/petclinic/vet/VetController.java",
+            "src/test/java/org/springframework/samples/petclinic/vet/VetControllerTests.java"
           ]
         }
       ]

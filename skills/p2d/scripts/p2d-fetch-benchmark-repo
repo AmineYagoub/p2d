@@ -7,6 +7,7 @@ import argparse
 import json
 import subprocess
 import sys
+import time
 from pathlib import Path
 
 
@@ -17,8 +18,18 @@ DEFAULT_CONFIG = SKILL_DIR / "benchmarks/repos.json"
 DEFAULT_BENCH_ROOT = WORKSPACE_ROOT / ".p2d-bench/repos"
 
 
-def run(command: list[str], cwd: Path | None = None, check: bool = True) -> subprocess.CompletedProcess:
-    result = subprocess.run(command, cwd=cwd, text=True, capture_output=True, check=False)
+def run(
+    command: list[str],
+    cwd: Path | None = None,
+    check: bool = True,
+    retries: int = 0,
+) -> subprocess.CompletedProcess:
+    result = subprocess.CompletedProcess(command, 1, "", "")
+    for attempt in range(retries + 1):
+        result = subprocess.run(command, cwd=cwd, text=True, capture_output=True, check=False)
+        if result.returncode == 0 or attempt == retries:
+            break
+        time.sleep(1 + attempt)
     if check and result.returncode != 0:
         raise RuntimeError(
             f"command failed: {' '.join(command)}\nstdout:\n{result.stdout}\nstderr:\n{result.stderr}"
@@ -42,9 +53,9 @@ def ensure_repo(repo: dict, bench_root: Path) -> Path:
     bench_root.mkdir(parents=True, exist_ok=True)
     dest = bench_root / repo["id"]
     if not (dest / ".git").exists():
-        run(["git", "clone", "--filter=blob:none", repo["url"], str(dest)])
-    run(["git", "fetch", "--depth", "1", "origin", repo["commit"]], cwd=dest, check=False)
-    run(["git", "checkout", "--detach", repo["commit"]], cwd=dest)
+        run(["git", "clone", "--filter=blob:none", repo["url"], str(dest)], retries=2)
+    run(["git", "fetch", "--depth", "1", "origin", repo["commit"]], cwd=dest, check=False, retries=2)
+    run(["git", "checkout", "--detach", repo["commit"]], cwd=dest, retries=1)
     return dest
 
 
