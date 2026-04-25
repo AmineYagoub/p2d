@@ -11,6 +11,10 @@ Before creating a new state variable, provider, or context, the agent must
 check if equivalent state already exists somewhere in the codebase. This
 prevents "split-brain" bugs where two separate sources of truth diverge.
 
+This mapper is an ownership heuristic, not proof that every owner has been
+found. Always report confidence, unknown terms, and any files that look
+ambiguous.
+
 ### When to Use This Rule
 
 - Agent is about to add a new state variable, React context, or service
@@ -41,10 +45,17 @@ grep -rn "@Injectable" --include="*.ts" .
 ```
 
 **State ownership check:** Before creating a new service, pass the actual
-domain terms to the bundled state mapper. Do not rely on the example terms.
+domain terms and synonyms to the bundled state mapper. Do not rely on the
+example terms.
 
 ```bash
 skills/p2d/scripts/p2d-state-map user auth session --root .
+```
+
+You can also use explicit term flags:
+
+```bash
+skills/p2d/scripts/p2d-state-map --terms user account profile --root .
 ```
 
 **Report format:**
@@ -55,6 +66,8 @@ State ownership map for [domain]:
     - UserService (user.service.ts): handles user CRUD, profiles
     - WalletService (wallet.service.ts): handles balances, transactions
   No existing provider for: [new state you're adding]
+  Unknown terms: none
+  Confidence: high where fields overlap, medium where only text matches
   Recommendation: Add to [UserService] or create new [XyzService]
 ```
 
