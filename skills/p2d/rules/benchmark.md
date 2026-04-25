@@ -11,6 +11,11 @@ When the user asks to run benchmarks, use the bundled harness instead of
 improvising a token-only comparison. P2D is successful only when it reduces
 tokens while preserving recall.
 
+Benchmark claims are valid only for the discovery/context-reading workflow being
+measured. Do not imply that the same percentage applies to total agent cost,
+which also includes reasoning, planning, editing, tests, recovery, and
+explanations.
+
 ### Prerequisites
 
 Run the doctor first:
@@ -82,6 +87,7 @@ For a real repository:
 1. Pick a symbol with a clear expected surface.
 2. Build or approximate ground truth with exhaustive search and manual
    classification.
+   Do not compare P2D output against a narrower search and claim equivalence.
 3. Save expected files in JSON:
 
 ```json
@@ -115,6 +121,9 @@ Always report:
 - False positives
 - Tool availability from `p2d-doctor`
 
+Never report savings without recall and precision. If recall is below the
+configured threshold, the benchmark must fail and list the missing files.
+
 ### Report Template
 
 ```markdown
@@ -137,5 +146,7 @@ False positives: none
 - Expected files are explicit and reviewable.
 - The command exits non-zero when expected files are missed.
 - Fallback mode is labeled instead of presented as full structural analysis.
+- Savings mean "tokens avoided while finding symbol-related files and relevant
+  context", not "total task cost reduction".
 
 See `references/evaluation.md` for release targets.
