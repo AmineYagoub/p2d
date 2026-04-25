@@ -22,7 +22,7 @@ Measure accuracy and savings together.
 - State ownership fixtures: all expected owner files reported.
 - Deletion simulation fixtures: all runtime break candidates reported.
 - Average token reduction: 70% or better on medium/large fixtures.
-- No instruction may recommend broad rollback such as `git checkout -- .`.
+- No instruction may recommend broad rollback that discards unrelated user work.
 
 ## Reporting Rule
 
