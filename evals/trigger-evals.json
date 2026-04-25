@@ -62,6 +62,66 @@
       "rationale": "Architecture impact mapping belongs to P2D."
     },
     {
+      "id": "trigger-casual-fix-without-breaking",
+      "query": "Can you fix this without breaking anything else? I don't know what other files use it.",
+      "should_trigger": true,
+      "rationale": "Casual safety phrasing plus unknown usages should trigger structural discovery."
+    },
+    {
+      "id": "trigger-casual-change-everywhere",
+      "query": "Make this change everywhere it needs to happen.",
+      "should_trigger": true,
+      "rationale": "Implies multi-file impact discovery even without advanced terminology."
+    },
+    {
+      "id": "trigger-casual-where-used",
+      "query": "Can you check where this thing is used before editing it?",
+      "should_trigger": true,
+      "rationale": "Plain-language usage discovery is a core P2D task."
+    },
+    {
+      "id": "trigger-casual-find-files",
+      "query": "I don't know where the payment logic lives; find the files I need to edit.",
+      "should_trigger": true,
+      "rationale": "Navigation and targeted file discovery should use P2D."
+    },
+    {
+      "id": "trigger-casual-still-used",
+      "query": "Is this old session helper still used or can we remove it?",
+      "should_trigger": true,
+      "rationale": "Dead-code and safe-removal checks are deletion/impact workflows."
+    },
+    {
+      "id": "trigger-casual-clean-safely",
+      "query": "Clean this duplicated auth code up safely.",
+      "should_trigger": true,
+      "rationale": "Safe cleanup implies discovering related references and state ownership."
+    },
+    {
+      "id": "trigger-casual-break-other-stuff",
+      "query": "Why did changing User break other parts of the app?",
+      "should_trigger": true,
+      "rationale": "Impact tracing phrased casually should trigger P2D."
+    },
+    {
+      "id": "trigger-casual-understand-before-changing",
+      "query": "Help me understand this feature before changing it; which files matter?",
+      "should_trigger": true,
+      "rationale": "Pre-change system mapping should trigger P2D."
+    },
+    {
+      "id": "trigger-casual-dont-mess-up-rest",
+      "query": "Don't mess up the rest of the app while renaming this.",
+      "should_trigger": true,
+      "rationale": "Rename safety and blast-radius intent should trigger P2D."
+    },
+    {
+      "id": "trigger-casual-api-related-files",
+      "query": "Update all related files after this API change.",
+      "should_trigger": true,
+      "rationale": "API change plus related files requires impact discovery."
+    },
+    {
       "id": "not-trigger-ast-explanation",
       "query": "Explain what an AST is to a junior developer.",
       "should_trigger": false,
@@ -120,6 +180,30 @@
       "query": "In this 20-line file, rename foo to bar.",
       "should_trigger": false,
       "rationale": "A tiny isolated edit does not need the full P2D protocol."
+    },
+    {
+      "id": "not-trigger-button-color",
+      "query": "Fix the button color without changing the layout.",
+      "should_trigger": false,
+      "rationale": "UI styling task with no codebase navigation or impact-analysis request."
+    },
+    {
+      "id": "not-trigger-copy-cleanup",
+      "query": "Clean up the wording in this modal.",
+      "should_trigger": false,
+      "rationale": "Text cleanup should not trigger P2D just because it says clean up."
+    },
+    {
+      "id": "not-trigger-single-file-understanding",
+      "query": "Help me understand this small function.",
+      "should_trigger": false,
+      "rationale": "Single-function explanation does not require codebase mapping."
+    },
+    {
+      "id": "not-trigger-generic-fix",
+      "query": "Fix this typo and commit it.",
+      "should_trigger": false,
+      "rationale": "Simple typo fix should not trigger structural discovery."
     }
   ]
 }
