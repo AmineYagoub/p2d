@@ -40,9 +40,12 @@ npx codemod --version 2>/dev/null
 | Platform | Command |
 |:---------|:--------|
 | macOS | `brew install ast-grep` |
-| npm (any) | `npm install -g @ast-grep/cli` |
+| npm (any) | `npm install --global @ast-grep/cli` |
 
 **code-review-graph** (required for Phase 2 MCP integration):
+
+Requires Python 3.10+. `uv` is recommended; code-review-graph uses `uvx` in MCP
+configuration when available and falls back to the installed command otherwise.
 
 | Platform | Command |
 |:---------|:--------|
@@ -50,7 +53,15 @@ npx codemod --version 2>/dev/null
 | pipx (any) | `pipx install code-review-graph` |
 
 After installing, run `code-review-graph install` to auto-configure your
-AI coding tool. Then `code-review-graph build` to parse the codebase.
+AI coding tool. To target one platform:
+
+```bash
+code-review-graph install --platform codex
+code-review-graph install --platform claude-code
+```
+
+Restart the editor/tool after install. Then run `code-review-graph build` in
+the project to parse the codebase.
 
 **Codemod** (optional, for Phase 3 complex transforms):
 
@@ -84,7 +95,7 @@ ast-grep is missing. P2D will run in degraded mode:
 
 Install ast-grep for full capability:
   brew install ast-grep       (macOS)
-  npm install -g @ast-grep/cli (any)
+  npm install --global @ast-grep/cli (any)
 
 Proceed in degraded mode? [y/n]
 ```

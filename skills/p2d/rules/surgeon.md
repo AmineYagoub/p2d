@@ -19,7 +19,7 @@ sg --version 2>/dev/null || echo "ast-grep not found"
 npx codemod --version 2>/dev/null || echo "codemod not found"
 ```
 
-If ast-grep is missing, suggest: `npm install -g @ast-grep/cli` or `brew install ast-grep`.
+If ast-grep is missing, suggest: `npm install --global @ast-grep/cli` or `brew install ast-grep`.
 If both are missing, fall back to the native Edit tool with line-specific edits.
 
 ### When to Use This Rule

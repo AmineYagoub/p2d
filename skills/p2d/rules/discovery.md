@@ -19,7 +19,7 @@ install it or fall back to `rules/fallback.md`.
 sg --version 2>/dev/null || echo "ast-grep not found"
 ```
 
-If missing, suggest: `npm install -g @ast-grep/cli` or `brew install ast-grep`.
+If missing, suggest: `npm install --global @ast-grep/cli` or `brew install ast-grep`.
 
 ### When to Use This Rule
 

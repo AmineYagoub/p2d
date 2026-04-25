@@ -21,7 +21,20 @@ code-review-graph --version 2>/dev/null || echo "code-review-graph not found"
 code-review-graph status 2>/dev/null || echo "graph not built"
 ```
 
-If missing, suggest: `pip install code-review-graph && code-review-graph install && code-review-graph build`.
+If missing, explain that code-review-graph requires Python 3.10+ and suggest:
+
+```bash
+pip install code-review-graph
+# or: pipx install code-review-graph
+
+code-review-graph install --platform codex
+# or: code-review-graph install --platform claude-code
+
+code-review-graph build
+```
+
+Restart the editor/tool after `code-review-graph install`. `uv` is recommended;
+code-review-graph will use `uvx` in MCP configuration when available.
 
 If the user declines, use the fallback methods documented later in this rule.
 
@@ -43,13 +56,20 @@ dependency analysis, blast radius, and risk scoring.
 
 ### Prerequisites
 
-1. code-review-graph must be installed: `pip install code-review-graph`
-2. The graph must be built for the current repo:
+1. code-review-graph must be installed with Python 3.10+:
+   `pip install code-review-graph` or `pipx install code-review-graph`
+2. The target AI tool must be configured:
+   ```bash
+   code-review-graph install --platform codex
+   code-review-graph install --platform claude-code
+   ```
+   Use only the platform command relevant to the user's tool.
+3. The graph must be built for the current repo:
    ```bash
    code-review-graph build
    ```
    Or via MCP tool: `build_or_update_graph_tool`
-3. Initial build takes ~10s for 500 files. Subsequent updates are incremental (<2s).
+4. Initial build takes ~10s for 500 files. Subsequent updates are incremental (<2s).
 
 ### Key MCP Tools for Trace Phase
 
