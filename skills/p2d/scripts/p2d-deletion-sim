@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Simulate deleting a module by finding static and dynamic references."""
+"""Simulate deleting a module by finding static, dynamic, and runtime references."""
 
 from __future__ import annotations
 
@@ -10,8 +10,12 @@ from pathlib import Path
 from p2d_common import as_json, iter_source_files, rel, safe_read
 
 
-def classify(text: str) -> str:
+def classify(text: str, path: Path) -> str:
     stripped = text.strip()
+    lower = stripped.lower()
+    file_name = path.name.lower()
+    if file_name == "package.json" and re.search(r'"(exports|main|module|types)"\s*:', stripped):
+        return "package-export"
     if stripped.startswith("import type") or stripped.startswith("export type") or "import type" in stripped:
         return "type-only"
     if "import(" in stripped:
@@ -20,6 +24,14 @@ def classify(text: str) -> str:
         return "commonjs"
     if stripped.startswith("export") and "from" in stripped:
         return "re-export"
+    if re.search(r"\b(router|route|get|post|put|patch|delete)\s*\(", stripped) or re.search(r"@(Get|Post|Put|Patch|Delete|Controller|Route)\b", stripped):
+        return "route-registration"
+    if re.search(r"\b(providers|imports|exports)\s*:", stripped) or re.search(r"@(Module|Injectable|Component)\b", stripped):
+        return "di-container"
+    if path.suffix in {".json", ".yaml", ".yml", ".toml", ".env"}:
+        return "config-reference"
+    if any(part in file_name for part in (".test.", ".spec.", "test_", "_test.")):
+        return "test"
     if "import" in stripped or "from" in stripped:
         return "static-import"
     return "other-reference"
@@ -42,16 +54,21 @@ def main() -> int:
                     {
                         "file": rel(path, root),
                         "line": line_no,
-                        "kind": classify(line),
+                        "kind": classify(line, path),
                         "text": line.strip(),
                     }
                 )
 
     runtime = [ref for ref in refs if ref["kind"] not in {"type-only"}]
+    buckets: dict[str, int] = {}
+    for ref in refs:
+        buckets[ref["kind"]] = buckets.get(ref["kind"], 0) + 1
     report = {
         "module": args.module,
         "total_references": len(refs),
         "runtime_break_candidates": len(runtime),
+        "type_only_cleanup_candidates": len([ref for ref in refs if ref["kind"] == "type-only"]),
+        "buckets": dict(sorted(buckets.items())),
         "safe_to_delete": len(runtime) == 0,
         "references": refs,
     }

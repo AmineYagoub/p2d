@@ -12,6 +12,7 @@ from p2d_common import as_json, iter_source_files, rel, safe_read
 
 STATE_PATTERNS = {
     "nestjs-injectable": re.compile(r"@Injectable|class\s+\w+Service\b"),
+    "nestjs-module-provider": re.compile(r"@Module|providers\s*:|exports\s*:"),
     "react-context": re.compile(r"createContext|useContext|\.Provider\b"),
     "zustand": re.compile(r"\bcreate\s*(<[^>]+>)?\s*\("),
     "valtio": re.compile(r"\bproxy\s*\("),
@@ -19,31 +20,67 @@ STATE_PATTERNS = {
     "pinia": re.compile(r"\bdefineStore\s*\("),
     "svelte-store": re.compile(r"\b(writable|readable|derived)\s*\("),
     "fastapi-state": re.compile(r"Depends\s*\(|app\.state"),
+    "repository-service": re.compile(r"\b(class|interface)\s+\w*(Repository|Service)\b"),
 }
+
+
+def exported_names(text: str) -> list[str]:
+    names = re.findall(r"\bexport\s+(?:class|function|const|let|var|interface|type)\s+([A-Za-z_][A-Za-z0-9_]*)", text)
+    names.extend(re.findall(r"\bclass\s+([A-Za-z_][A-Za-z0-9_]*(?:Service|Repository|Store|Context))\b", text))
+    return sorted(set(names))
+
+
+def field_names(text: str) -> list[str]:
+    fields = re.findall(r"\b([A-Za-z_][A-Za-z0-9_]*)\??\s*:", text)
+    return sorted({field for field in fields if field not in {"providers", "exports", "imports"}})
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Map state ownership by domain terms")
-    parser.add_argument("terms", nargs="+", help="Domain terms, e.g. user auth session")
+    parser.add_argument("terms", nargs="*", help="Domain terms, e.g. user auth session")
+    parser.add_argument("--terms", dest="terms_option", nargs="+", help="Domain terms; same as positional terms")
     parser.add_argument("--root", default=".")
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
 
     root = Path(args.root).resolve()
-    term_pattern = re.compile("|".join(re.escape(term) for term in args.terms), re.IGNORECASE)
+    terms = args.terms_option or args.terms
+    if not terms:
+        parser.error("provide at least one domain term")
+    term_pattern = re.compile("|".join(re.escape(term) for term in terms), re.IGNORECASE)
     owners = []
     for path in iter_source_files(root):
         text = safe_read(path)
-        if not term_pattern.search(text):
+        matched_terms = sorted({term for term in terms if re.search(re.escape(term), text, re.IGNORECASE)})
+        if not matched_terms:
             continue
         matched_kinds = [name for name, pattern in STATE_PATTERNS.items() if pattern.search(text)]
         if matched_kinds:
-            owners.append({"file": rel(path, root), "kinds": matched_kinds})
+            fields = field_names(text)
+            overlapping_fields = sorted(
+                {
+                    field
+                    for field in fields
+                    if any(term.lower() in field.lower() or field.lower() in term.lower() for term in terms)
+                }
+            )
+            owners.append(
+                {
+                    "file": rel(path, root),
+                    "kinds": matched_kinds,
+                    "matched_terms": matched_terms,
+                    "exported_names": exported_names(text),
+                    "fields": fields,
+                    "overlapping_fields": overlapping_fields,
+                    "confidence": "high" if overlapping_fields or len(matched_terms) > 1 else "medium",
+                }
+            )
 
     report = {
-        "terms": args.terms,
+        "terms": terms,
         "owners": owners,
         "potential_split_brain": len(owners) > 1,
+        "unknown_terms": sorted(set(terms) - {term for owner in owners for term in owner["matched_terms"]}),
     }
 
     if args.json:

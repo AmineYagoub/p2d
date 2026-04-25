@@ -36,6 +36,10 @@ SOURCE_EXTENSIONS = {
     ".hpp",
     ".vue",
     ".svelte",
+    ".json",
+    ".yaml",
+    ".yml",
+    ".toml",
 }
 
 IGNORED_DIRS = {
@@ -50,6 +54,12 @@ IGNORED_DIRS = {
     "__pycache__",
     "target",
     "coverage",
+    "vendor",
+    "generated",
+    ".generated",
+    "__generated__",
+    ".pytest_cache",
+    ".mypy_cache",
 }
 
 
@@ -112,12 +122,16 @@ def classify_line(symbol: str, text: str, path: Path) -> str:
     stripped = text.strip()
     suffix = path.suffix
     lower_name = path.name.lower()
+    if stripped.startswith("import type") or stripped.startswith("export type"):
+        return "type-only"
     if re.search(r"\b(import|from|require|use)\b", stripped) or "import(" in stripped:
         return "import"
-    if re.search(r"\b(export|module\.exports)\b", stripped):
-        return "export"
     if re.search(rf"\b(class|interface|type|struct|trait|func|def|function)\s+{re.escape(symbol)}\b", stripped):
         return "definition"
+    if re.search(rf"\b{re.escape(symbol)}\s*[:=]\s*(?:func|function|\(|async|\{{)", stripped):
+        return "definition"
+    if re.search(r"\b(export|module\.exports)\b", stripped):
+        return "export"
     if re.search(rf"\b{re.escape(symbol)}\s*\(", stripped):
         return "call"
     if re.search(rf"[\"'`].*{re.escape(symbol)}.*[\"'`]", stripped):
