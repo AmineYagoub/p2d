@@ -41,7 +41,9 @@ If both are missing, fall back to the native Edit tool with line-specific edits.
 
 ## Method 1: ast-grep Replacement (Preferred)
 
-ast-grep supports inline replacement with the `-r` flag.
+ast-grep supports inline replacement with the `-r` flag. Treat every command in
+this section as a pattern sketch until the previewed match set proves it is
+complete and safe.
 
 ### Symbol Rename Preview
 
@@ -50,9 +52,9 @@ ast-grep supports inline replacement with the `-r` flag.
 skills/p2d/scripts/p2d-safe-rename-preview oldFunctionName newFunctionName --root .
 ```
 
-Only apply ast-grep replacements after the preview includes every required
-bucket: definitions, imports, exports, calls, strings/config references, and
-tests. A single pattern rarely covers all buckets.
+Only apply replacements after the preview includes every required bucket:
+definitions, imports, exports, calls, strings/config references, and tests. A
+single pattern rarely covers all buckets.
 
 ```bash
 # Example sketch after preview, scoped to function calls only
@@ -210,7 +212,7 @@ After any surgical edit, verify correctness:
 4. Consider using `git diff` to review all changes at once
 5. If the change is too invasive, stop and review `git diff`. Revert only the
    hunks created by this agent. Never use broad rollback commands that discard
-   unrelated user work.
+   unrelated user work. See `references/safety.md` for dirty-worktree recovery.
 
 ### Token Savings
 
@@ -222,7 +224,7 @@ After any surgical edit, verify correctness:
 
 - NEVER rewrite an entire 500-line file to change 3 lines
 - NEVER use full-file output when a targeted edit suffices
-- NEVER use broad destructive rollback such as `git checkout -- .`
+- NEVER use broad destructive rollback that discards unrelated user work
 - Do NOT skip verification after surgical edits
 - Do NOT apply replacements without running Phase 2 first — always confirm
   the match set matches expectations
