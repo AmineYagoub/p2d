@@ -271,6 +271,27 @@ sg -p '$EXPR.unwrap()' -l rust
 ```
 Risk: If the edit changes what `EXPR` can produce, `.unwrap()` might panic.
 
+**Symbol shadowing in nested scopes:**
+```bash
+sg -p 'const $NAME = $VALUE' -l ts
+sg -p 'let $NAME = $VALUE' -l ts
+```
+Risk: If the target symbol is shadowed by a local binding in a nested scope,
+edits to the outer definition won't affect the shadowed usage. Check for
+duplicate bindings with the same name in inner scopes.
+
+**Feature-flagged or generated code:**
+```bash
+sg -p 'if (process.env.$FEATURE)' -l ts
+sg -p '#if DEBUG' -l cs
+sg -p '#[cfg(feature = $NAME)]' -l rust
+```
+Risk: Code behind a feature flag, conditional compilation, or code-generation
+marker may be inactive at runtime even though it references the symbol.
+Changes to such code won't affect production behavior until the flag is enabled.
+Generated files (check for `// Generated` or `@generated` markers) should not
+be edited directly — edit the generator instead.
+
 ### Detection Patterns (code-review-graph)
 
 **Untested callers of modified function:**
