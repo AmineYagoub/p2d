@@ -24,6 +24,11 @@ def git_status(root: Path) -> dict:
     return {"is_git_repo": True, "dirty": bool(entries), "entries": entries}
 
 
+def detect_graph_db(root: Path) -> dict:
+    db_path = root / ".code-review-graph" / "graph.db"
+    return {"available": db_path.exists(), "path": str(db_path) if db_path.exists() else None}
+
+
 def source_summary(root: Path) -> dict:
     counts: dict[str, int] = {}
     total = 0
@@ -41,12 +46,19 @@ def main() -> int:
     args = parser.parse_args()
 
     root = Path(args.root).resolve()
+
+    cli = command_version(["code-review-graph", "--version"])
+    db = detect_graph_db(root)
+
     report = {
         "root": str(root),
         "tools": {
             "ast_grep": command_version(["sg", "--version"]),
-            "code_review_graph": command_version(["code-review-graph", "--version"]),
-            "codemod": command_version(["npx", "codemod", "--version"]),
+            "code_review_graph_cli": cli,
+            "code_review_graph_db": db,
+            "code_review_graph_mcp": {"available": None, "note": "not detectable from doctor script"},
+            "code_review_graph": {"available": cli["available"]},
+            "graph_db_present": db["available"],
         },
         "git": git_status(root),
         "source": source_summary(root),
@@ -58,10 +70,18 @@ def main() -> int:
 
     print("P2D Doctor")
     print(f"Root: {report['root']}")
-    for name, status in report["tools"].items():
-        mark = "yes" if status["available"] else "no"
-        version = status["version"] or "not found"
-        print(f"- {name}: {mark} ({version})")
+
+    ast = report["tools"]["ast_grep"]
+    print(f"- ast_grep: {'yes' if ast['available'] else 'no'} ({ast.get('version') or 'not found'})")
+
+    cli_v = cli.get("version") or "not found"
+    print(f"- code_review_graph_cli: {'yes' if cli['available'] else 'no'} ({cli_v})")
+    print(f"- code_review_graph_db: {'yes' if db['available'] else 'no'}" + (f" ({db['path']})" if db["available"] else ""))
+    print("- code_review_graph_mcp: unknown (doctor script cannot inspect session MCP tools)")
+    combined = "yes" if cli["available"] else "no"
+    note = "" if cli["available"] else " (CLI unavailable; MCP may still be available to the agent)"
+    print(f"- code_review_graph: {combined}{note}")
+
     dirty = report["git"]["dirty"]
     if dirty is None:
         print("- git: not a repository")

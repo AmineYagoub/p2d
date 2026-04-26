@@ -50,9 +50,13 @@ class FindSymbolTests(unittest.TestCase):
             (root / "src").mkdir()
             (root / "generated").mkdir()
             (root / "build").mkdir()
+            (root / ".p2d-bench/repos/example").mkdir(parents=True)
+            (root / ".code-review-graph").mkdir()
             (root / "src/live.ts").write_text("export class UserService {}\n", encoding="utf-8")
             (root / "generated/user.ts").write_text("export class UserService {}\n", encoding="utf-8")
             (root / "build/user.ts").write_text("export class UserService {}\n", encoding="utf-8")
+            (root / ".p2d-bench/repos/example/user.ts").write_text("export class UserService {}\n", encoding="utf-8")
+            (root / ".code-review-graph/user.ts").write_text("export class UserService {}\n", encoding="utf-8")
 
             report = self.run_find(root, "UserService")
             found = {ref["file"] for ref in report["references"]}
