@@ -1,26 +1,25 @@
 ---
-title: Surgical Execution via Tree-sitter and Codemod
+title: Surgical Execution via ast-grep
 impact: HIGH
 impactDescription: Reduces output tokens by up to 95% vs full-file rewrites
-tags: surgeon, codemod, tree-sitter, AST edit, surgical, node swap
+tags: surgeon, ast-grep, AST edit, surgical, node swap
 ---
 
-## Surgical Execution via Tree-sitter and Codemod
+## Surgical Execution via ast-grep
 
 For changes involving less than 20% of a file's code, perform targeted
 AST node swaps instead of full file rewrites.
 
 ### Prerequisites
 
-Before using ast-grep replacement or Codemod, check availability:
+Before using ast-grep replacement, check availability:
 
 ```bash
 sg --version 2>/dev/null || echo "ast-grep not found"
-npx codemod --version 2>/dev/null || echo "codemod not found"
 ```
 
 If ast-grep is missing, suggest: `npm install --global @ast-grep/cli` or `brew install ast-grep`.
-If both are missing, fall back to the native Edit tool with line-specific edits.
+If ast-grep is unavailable, fall back to the native Edit tool with line-specific edits.
 
 ### When to Use This Rule
 
@@ -111,42 +110,9 @@ Use rule files when:
 
 ---
 
-## Method 2: Codemod (for supported languages)
+## Method 2: Native Edit Tool
 
-Codemod provides a registry of pre-built transforms and a local JS/TS
-ast-grep engine for custom transforms.
-
-### Running a registry transform
-
-```bash
-npx codemod workflow run <codemod-name> --target src/
-```
-
-Browse available codemods at codemod.com/registry.
-
-### Running a local custom transform
-
-```bash
-npx codemod jssg run ./transforms/rename-symbol.ts --target src/
-```
-
-The transform file is a TypeScript module using Codemod's jssg engine
-(JS/TS ast-grep syntax).
-
-### When to use Codemod vs ast-grep
-
-| Situation | Use |
-|:----------|:----|
-| Simple rename/replacement | ast-grep (`sg -p ... -r ...`) |
-| Pre-built transform from registry | Codemod (`npx codemod workflow run`) |
-| Custom JS/TS transform with logic | Codemod jssg |
-| Non-JS/TS language | ast-grep (broader language support) |
-
----
-
-## Method 3: Native Edit Tool
-
-When neither ast-grep nor Codemod is available, use the agent's native
+When ast-grep is not available, use the agent's native
 Edit tool with line-specific edits. Target only the lines that change.
 
 **Approach:**
