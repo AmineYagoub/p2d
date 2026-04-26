@@ -358,6 +358,92 @@
           ]
         }
       ]
+    },
+    {
+      "id": "discourse",
+      "description": "Large real Rails application benchmark for service discovery across app, plugins, jobs, and specs.",
+      "url": "https://github.com/discourse/discourse.git",
+      "commit": "d73e4484b4b9dcffa1e75e2ceff6e0a005d479c6",
+      "language": "ruby-javascript",
+      "type": "rails-monolith",
+      "targets": [
+        {
+          "symbol": "PostAlerter",
+          "task_type": "rails-service-discovery",
+          "language": "ruby",
+          "notes": "Notification service referenced by controllers, jobs, plugins, and specs in a 10k+ source-file Rails monolith.",
+          "expected_files": [
+            "app/controllers/composer_controller.rb",
+            "app/jobs/regular/group_pm_alert.rb",
+            "app/jobs/regular/group_pm_update_summary.rb",
+            "app/jobs/regular/notify_category_change.rb",
+            "app/jobs/regular/notify_tag_change.rb",
+            "app/jobs/regular/post_alert.rb",
+            "app/services/post_action_notifier.rb",
+            "app/services/post_alerter.rb",
+            "lib/email/message_id_service.rb",
+            "plugins/chat/app/jobs/regular/chat/notify_mentioned.rb",
+            "plugins/chat/app/jobs/regular/chat/notify_watching.rb",
+            "plugins/chat/lib/chat/post_notification_handler.rb",
+            "plugins/chat/spec/jobs/regular/chat/notify_mentioned_spec.rb",
+            "plugins/chat/spec/jobs/regular/chat/notify_watching_spec.rb",
+            "plugins/discourse-assign/lib/discourse_assign/create_notification.rb",
+            "plugins/discourse-assign/spec/lib/discourse_assign/create_notification_spec.rb",
+            "plugins/discourse-calendar/jobs/regular/discourse_post_event/send_reminder.rb",
+            "plugins/discourse-post-voting/lib/post_voting/comment_creator.rb",
+            "plugins/discourse-reactions/app/services/discourse_reactions/reaction_notification.rb",
+            "plugins/discourse-reactions/plugin.rb",
+            "spec/models/notification_spec.rb",
+            "spec/models/user_action_spec.rb",
+            "spec/requests/topics_controller_spec.rb",
+            "spec/services/post_action_notifier_spec.rb",
+            "spec/services/post_alerter_spec.rb"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "aspnetcore",
+      "description": "Large ASP.NET Core monorepo benchmark for C# framework type discovery across runtime code, analyzers, tools, and tests.",
+      "url": "https://github.com/dotnet/aspnetcore.git",
+      "commit": "c4db2306aad327f8c45c546f82625082156f73bb",
+      "language": "csharp",
+      "type": "dotnet-monorepo",
+      "targets": [
+        {
+          "symbol": "WebApplicationBuilder",
+          "task_type": "framework-type-discovery",
+          "language": "csharp",
+          "notes": "Framework builder type referenced across default builder code, analyzers, tools, OpenAPI, MVC testing, and validation tests in a 10k+ source-file .NET monorepo.",
+          "expected_files": [
+            "src/DefaultBuilder/src/ConfigureHostBuilder.cs",
+            "src/DefaultBuilder/src/ConfigureWebHostBuilder.cs",
+            "src/DefaultBuilder/src/WebApplication.cs",
+            "src/DefaultBuilder/src/WebApplicationBuilder.cs",
+            "src/DefaultBuilder/src/WebHost.cs",
+            "src/DefaultBuilder/test/Microsoft.AspNetCore.Tests/WebApplicationTests.cs",
+            "src/Framework/AspNetCoreAnalyzers/src/Analyzers/WebApplicationBuilder/WebApplicationBuilderAnalyzer.cs",
+            "src/Framework/AspNetCoreAnalyzers/src/CodeFixes/WebApplicationBuilderFixer.cs",
+            "src/Framework/AspNetCoreAnalyzers/test/Dependencies/AddPackageTests.cs",
+            "src/Framework/AspNetCoreAnalyzers/test/Dependencies/ExtensionMethodsCompletionProviderTests.cs",
+            "src/Framework/AspNetCoreAnalyzers/test/Verifiers/CSharpSourceGeneratorVerifier.cs",
+            "src/Framework/AspNetCoreAnalyzers/test/WebApplicationBuilder/DisallowConfigureAppConfigureHostBuilderTest.cs",
+            "src/Framework/AspNetCoreAnalyzers/test/WebApplicationBuilder/DisallowConfigureHostBuilderConfigureWebHostTest.cs",
+            "src/Framework/AspNetCoreAnalyzers/test/WebApplicationBuilder/DisallowConfigureHostLoggingTest.cs",
+            "src/Framework/AspNetCoreAnalyzers/test/WebApplicationBuilder/DisallowConfigureServicesTest.cs",
+            "src/Framework/AspNetCoreAnalyzers/test/WebApplicationBuilder/DisallowConfigureWebHostBuilderConfigureTest.cs",
+            "src/Framework/AspNetCoreAnalyzers/test/WebApplicationBuilder/DisallowConfigureWebHostBuilderUseStartupTest.cs",
+            "src/Framework/AspNetCoreAnalyzers/test/WebApplicationBuilder/UseTopLevelRouteRegistrationInsteadOfUseEndpointsTest.cs",
+            "src/Hosting/Hosting/src/WebHostBuilder.cs",
+            "src/Mvc/Mvc.Testing/src/DeferredHostBuilder.cs",
+            "src/OpenApi/src/Extensions/OpenApiServiceCollectionExtensions.cs",
+            "src/OpenApi/test/Microsoft.AspNetCore.OpenApi.SourceGenerators.Tests/SnapshotTestHelper.cs",
+            "src/Tools/GetDocumentInsider/src/Commands/GetDocumentCommandWorker.cs",
+            "src/Validation/test/Microsoft.Extensions.Validation.GeneratorTests/ValidationsGenerator.IValidatableObject.cs",
+            "src/Validation/test/Microsoft.Extensions.Validation.GeneratorTests/ValidationsGeneratorTestBase.cs"
+          ]
+        }
+      ]
     }
   ]
 }
