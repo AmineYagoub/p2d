@@ -18,7 +18,7 @@ The section ID (in parentheses) is the filename used for each rule.
 ## 3. Surgical Execution (surgeon)
 
 **Impact:** HIGH
-**Description:** For targeted changes (less than 20% of a file), perform previewed AST node swaps using ast-grep replacement, Codemod, or native Edit tool instead of full-file rewrites. Includes pattern sketches, match-set review, verification steps, and failure recovery procedures.
+**Description:** For targeted changes (less than 20% of a file), perform previewed AST node swaps using ast-grep replacement or native Edit tool instead of full-file rewrites. Includes pattern sketches, match-set review, verification steps, and failure recovery procedures.
 
 ## 4. Graceful Fallback (fallback)
 
@@ -28,7 +28,7 @@ The section ID (in parentheses) is the filename used for each rule.
 ## 5. Auto-Install & Prerequisites (auto-install)
 
 **Impact:** MEDIUM
-**Description:** Detects missing structural tools (ast-grep, code-review-graph, Codemod) at the start of a P2D session and offers platform-specific install commands. Reports which phases will run in degraded mode if tools are unavailable.
+**Description:** Detects missing structural tools (ast-grep, code-review-graph) at the start of a P2D session and offers platform-specific install commands. Reports which phases will run in degraded mode if tools are unavailable.
 
 ## 6. Multi-Tool Strategies & Code Smell Detection (strategies)
 
