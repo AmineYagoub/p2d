@@ -7,7 +7,7 @@ tags: fallback, probabilistic, grep, graceful degradation, heuristics
 
 ## Graceful Fallback to Probabilistic Search
 
-When structural tools (ast-grep, code-review-graph, Codemod) are unavailable
+When structural tools (ast-grep, code-review-graph) are unavailable
 or fail, fall back to traditional text-based methods — but do so efficiently.
 
 ### When to Use This Rule
