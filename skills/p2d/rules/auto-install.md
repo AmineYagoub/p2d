@@ -26,11 +26,8 @@ Run each check via bash. Report a summary to the user before proceeding.
 # Check ast-grep
 sg --version 2>/dev/null
 
-# Check code-review-graph (MCP server)
+# Check code-review-graph CLI; MCP availability is session-specific
 code-review-graph --version 2>/dev/null
-
-# Check codemod
-npx codemod --version 2>/dev/null
 ```
 
 ### Install Commands by Platform
@@ -42,6 +39,8 @@ npx codemod --version 2>/dev/null
 | macOS | `brew install ast-grep` |
 | npm (any) | `npm install --global @ast-grep/cli` |
 
+Tested with 0.42.1 at release time. Newer versions are expected to work.
+
 **code-review-graph** (required for Phase 2 MCP integration):
 
 Requires Python 3.10+. `uv` is recommended; code-review-graph uses `uvx` in MCP
@@ -51,6 +50,8 @@ configuration when available and falls back to the installed command otherwise.
 |:---------|:--------|
 | pip (any) | `pip install code-review-graph` |
 | pipx (any) | `pipx install code-review-graph` |
+
+Tested with 0.5.4 at release time. Newer versions are expected to work.
 
 After installing, run `code-review-graph install` to auto-configure your
 AI coding tool. To target one platform:
@@ -63,35 +64,35 @@ code-review-graph install --platform claude-code
 Restart the editor/tool after install. Then run `code-review-graph build` in
 the project to parse the codebase.
 
-**Codemod** (optional, for Phase 3 complex transforms):
-
-| Platform | Command |
-|:---------|:--------|
-| npm (any) | `npm install -g codemod` |
-
 ### Startup Report Template
 
 Present this to the user on first activation:
 
 ```
 P2D Prerequisites Check:
-  ast-grep:           ✓ v0.x.x  (Phase 1 & 3)
-  code-review-graph:  ✓ v0.x.x  (Phase 2 MCP)
-  codemod:            ✗ not found (Phase 3 optional, ast-grep covers most cases)
+  ast-grep:              yes (ast-grep 0.x.x)
+  code-review-graph CLI: yes (code-review-graph 0.x.x)
+  code-review-graph DB:  yes (.code-review-graph/graph.db)
+  code-review-graph MCP: unknown (doctor cannot inspect session MCP tools)
+  code-review-graph:     yes (CLI available)
 
-All critical tools available. P2D ready.
+Structural tools available. P2D ready. If the agent can see
+code-review-graph MCP tools in this session, it may use graph/full mode.
 ```
 
 or:
 
 ```
 P2D Prerequisites Check:
-  ast-grep:           ✗ not found
-  code-review-graph:  ✓ v0.x.x
+  ast-grep:              no (not found)
+  code-review-graph CLI: no (not found)
+  code-review-graph DB:  yes (.code-review-graph/graph.db)
+  code-review-graph MCP: unknown (doctor cannot inspect session MCP tools)
+  code-review-graph:     no (CLI unavailable; MCP may still be available to the agent)
 
 ast-grep is missing. P2D will run in degraded mode:
   Phase 1 (Discovery): fallback to targeted grep
-  Phase 3 (Surgeon):   fallback to native Edit tool
+  Phase 3 (Surgeon):   fallback to native edit tools
 
 Install ast-grep for full capability:
   brew install ast-grep       (macOS)
