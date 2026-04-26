@@ -1,6 +1,6 @@
 # P2D
 
-Version: `v1.5.3` | Repository: [AmineYagoub/p2d](https://github.com/AmineYagoub/p2d)
+Version: `v1.6.0` | Repository: [AmineYagoub/p2d](https://github.com/AmineYagoub/p2d)
 
 **P2D helps AI coding agents stop guessing, map the system before they edit,
 and save tokens, time, and money.**
@@ -146,9 +146,9 @@ P2D adapts to the tools available in the project:
 
 | Mode | Available tools | What happens |
 | :--- | :-------------- | :----------- |
-| Full | [ast-grep](https://github.com/ast-grep/ast-grep), [code-review-graph](https://github.com/tirth8205/code-review-graph), [Codemod](https://github.com/codemod/codemod) | Best structural discovery, graph tracing, and surgical edit previews. |
-| Structural | [ast-grep](https://github.com/ast-grep/ast-grep), [Codemod](https://github.com/codemod/codemod) | Strong AST search and targeted edits, fallback dependency tracing. |
-| Graph | [code-review-graph](https://github.com/tirth8205/code-review-graph), [Codemod](https://github.com/codemod/codemod) | Strong impact mapping, fallback text discovery. |
+| Full | [ast-grep](https://github.com/ast-grep/ast-grep), [code-review-graph](https://github.com/tirth8205/code-review-graph) | Best structural discovery, graph tracing, and surgical edit previews. |
+| Structural | [ast-grep](https://github.com/ast-grep/ast-grep) | Strong AST search and targeted edits, fallback dependency tracing. |
+| Graph | [code-review-graph](https://github.com/tirth8205/code-review-graph) | Strong impact mapping, fallback text discovery. |
 | Fallback | no structural tools | Targeted grep/git grep, line-range reads, and bundled scripts. |
 
 Even fallback mode is useful. It is not "no P2D"; it is P2D with fewer
@@ -166,9 +166,11 @@ Pinned public benchmark profiles currently show:
 | `golang-gin-realworld` | 3 | 100% recall, 100% precision, 90-98% savings |
 | `mini-redis` | 3 | 100% recall, 100% precision, 92-96% savings |
 | `spring-petclinic` | 4 | 100% recall, 100% precision, 89-96% savings |
+| `discourse` | 1 | 100% recall, 100% precision, 96% savings |
+| `aspnetcore` | 1 | 100% recall, 100% precision, 92% savings |
 
-These results cover 23 targets across 6 ecosystems: TypeScript/NestJS, React,
-FastAPI/Python, Go/Gin, Rust/Tokio, and Java/Spring.
+These results cover 25 targets across 8 ecosystems: TypeScript/NestJS, React,
+FastAPI/Python, Go/Gin, Rust/Tokio, Java/Spring, Rails, and .NET.
 
 Savings vary by target size and symbol spread: smaller or tightly clustered
 symbols have less irrelevant context to skip, while larger cross-file symbols
@@ -183,6 +185,28 @@ Total agent cost also includes reasoning, planning, editing, test output, error
 recovery, explanations, and unrelated file reads. P2D mainly saves tokens in the
 expensive part where agents usually waste context: find the symbol, read files,
 understand impact.
+
+## Token Savings Example
+
+Real output from a pinned benchmark target:
+
+**Task:** Find all references to `AuthMiddleware` in a Go/Gin codebase (4 expected files).
+**Mode:** Fallback discovery with expected-file ground truth.
+
+| Metric | Standard | P2D |
+|:-------|---------:|----:|
+| Tokens consumed | 17,347 | 355 |
+| Savings | — | **97.95%** |
+| Recall | — | 100% |
+| Precision | — | 100% |
+| False negatives | — | 0 |
+| False positives | — | 0 |
+
+Standard approach reads every matched file in full. P2D returns categorized references
+(1 definition, 12 calls) without reading the files. The 4 expected files were found,
+no files were missed, no files were incorrectly included.
+
+Run `Benchmark P2D on this codebase` to measure savings against your own project.
 
 ## Included Helpers
 
