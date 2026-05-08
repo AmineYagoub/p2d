@@ -78,7 +78,7 @@ class FindSymbolTests(unittest.TestCase):
 
             self.assertEqual(found, {"src/live.PY"})
 
-    @unittest.skipIf(os.geteuid() == 0, "root can read permission-restricted files")
+    @unittest.skipIf(not hasattr(os, "geteuid") or os.geteuid() == 0, "root or Windows: can read permission-restricted files")
     def test_unreadable_file_does_not_crash(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
