@@ -1,33 +1,21 @@
 ---
 name: p2d
 description: >-
-  Probabilistic-to-Deterministic code intelligence. Orchestrates ast-grep,
-  code-review-graph, and ast-grep to navigate and edit code by
-  structure instead of text. Use this skill when the user asks to find symbols,
-  refactor code, trace dependencies, map blast radius of changes, perform
-  surgical edits, or work with large codebases where grep/read is inefficient.
-  Also use it for casual safety/navigation requests such as fixing something
-  without breaking the app, updating all related files, finding where code is
-  used or defined, checking whether code is still used, finding the files to
-  edit, removing code safely, or understanding code before changing it.
-  Triggers on: "find all usages of", "where is this used", "where is this
-  defined", "find all callers", "find the files I need to edit", "which files
-  matter", "I don't know where this lives", "refactor", "what depends on",
-  "what parts of the app depend on", "blast radius", "rename across codebase",
-  "preview renaming", "show every importer", "impact of this change",
-  "changing this function signature", "untested callers", "safe to change",
-  "fix this without breaking anything", "don't mess up the rest of the app",
-  "update all related files", "make this change everywhere", "clean this up
-  safely", "is this still used", "remove this safely", "will imports break",
-  "why did changing this break other parts of the app", "why did changing this
-  break other stuff", "run benchmarks", "show token savings", "benchmark
-  P2D", "P2D doctor", "doctor mode", "prerequisites check", "what mode will
-  P2D use", "where does state live", "state ownership", "who owns this data",
-  "can I delete this module", "what breaks if I remove".
+  Code navigation, refactoring, and impact analysis for any codebase.
+  Finds symbols, traces dependencies, maps blast radius, renames safely,
+  and performs surgical edits using structural AST tools. Use when the user
+  asks to find usages, find references, navigate code, refactor, review
+  changes, rename across files, check impact, understand dependencies, or
+  edit code without breaking anything. Covers code review, best practices,
+  and code quality workflows. Works on projects of any size. Also handles:
+  safe rename, deletion simulation, state ownership mapping, and recall-aware
+  benchmarks. Triggers on: "find all usages", "where is this used", "refactor",
+  "blast radius", "rename", "safe to change", "is this still used", "can I
+  delete this module", "what breaks if I remove", "update all related files".
 license: MIT
 metadata:
   author: p2d
-  version: '1.6.0'
+  version: '1.6.1'
 ---
 
 # P2D: Orchestrated Determinism
@@ -43,7 +31,8 @@ Use this protocol when the user:
 - Asks to find, rename, or refactor symbols across a codebase
 - Requests dependency or impact analysis before making changes
 - Wants to understand the "blast radius" of a proposed edit
-- Works in a large codebase where reading files one-by-one is wasteful
+- Works in any codebase where reading files one-by-one is wasteful (this is
+  always true — structural search is faster even for small projects)
 - Uses casual safety/navigation phrasing like "fix this without breaking
   anything", "update all related files", "is this still used", or "I don't know
   where this lives"
