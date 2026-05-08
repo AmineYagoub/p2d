@@ -38,6 +38,27 @@ code-review-graph will use `uvx` in MCP configuration when available.
 
 If the user declines, use the fallback methods documented later in this rule.
 
+### Graph Freshness (Automatic)
+
+code-review-graph auto-updates via file-watcher hooks configured during
+`code-review-graph install`. In normal workflows the graph stays fresh without
+manual intervention.
+
+When P2D starts Phase 2 (trace), it should ensure the graph is up to date:
+
+1. Call `list_graph_stats_tool` to check the last update timestamp.
+2. If the graph has never been built, call `build_or_update_graph_tool`.
+3. If the last update is older than the current session, call
+   `build_or_update_graph_tool` for an incremental update. This only re-parses
+   changed files and typically completes in under 2 seconds.
+4. If the graph is fresh (updated during the current session), skip the rebuild.
+
+For full rebuild after major changes (branch switch, large merge), call
+`build_or_update_graph_tool` with `full_rebuild=True`.
+
+Do not block the user for a rebuild. Run it silently and proceed. If the graph
+is unavailable, fall back to ast-grep relational rules or targeted grep.
+
 ### When to Use This Rule
 
 - Before renaming a symbol
